@@ -26,6 +26,12 @@ public class Hood {
         return dist < 75 ? 0.45 : 0.09; //old max was 0.35 -> change if not working :P
 
     }
+    public double distanceToRPM(double dist){
+
+
+        return dist < 75 ? 0.45 : 0.09; //old max was 0.35 -> change if not working :P
+
+    }
 
 
 }

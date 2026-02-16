@@ -30,6 +30,7 @@ public class Robot {
     public Robot(HardwareMap hardwareMap, Pose initPose, Pose goal){
         drive = Constants.createFollower(hardwareMap);
         drive.setStartingPose(initPose);
+        drive.update();
         flywheels = new Flywheels(hardwareMap);
         gate = new Gate( hardwareMap);
         intake = new Intake(hardwareMap);
@@ -61,7 +62,8 @@ public class Robot {
         double parallel = -(velVector.getXComponent()*Math.sin(degrees) + velVector.getYComponent()*Math.cos(degrees));
         double angleOffset = Math.toDegrees(Math.atan2(ballTimeToGoal*perp,distance));
         double distancePredicted = parallel*ballTimeToGoal;
-        return new double[]{turret.autoAim(drivePose,goal)-angleOffset, flywheels.distanceToRPM(drivePose,goal,distancePredicted)};
+        double predictedTotalDistance = distance + distancePredicted;
+        return new double[]{turret.autoAim(drivePose,goal)-angleOffset, flywheels.flywheelTable.getInterpolatedValue(predictedTotalDistance), hood.distanceToRPM(predictedTotalDistance)};
     }
 
 
