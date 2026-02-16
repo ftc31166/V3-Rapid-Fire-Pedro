@@ -22,20 +22,20 @@ public class RedFar extends OpMode {
     private Follower follower;
     private ElapsedTime pathTimer, actionTimer, opmodeTimer;
     private int pathState;
-    public final Pose start = new Pose(87,9,Math.toRadians(0));
-    public final Pose pose1 = new Pose(135,9,Math.toRadians(0));
+    public static final Pose start = new Pose(87,9,Math.toRadians(0));
+    public static final Pose pose1 = new Pose(135,9,Math.toRadians(0));
 
-    public final Pose pose2 = new Pose(125,9,Math.toRadians(0));
-    public final Pose pose3 = new Pose(135,9,Math.toRadians(0));
-    public final Pose pose4 = new Pose(85,15,Math.toRadians(45));
-    public final Pose pose5 = new Pose(135,36,Math.toRadians(0));
-    public final Pose pose5cp1 = new Pose(106,37,Math.toRadians(0));
-    public final Pose pose6 = new Pose(85,15,Math.toRadians(10));
-    public final Pose pose7 = new Pose(135,24,Math.toRadians(0));
-    public final Pose pose8 = new Pose(125,24,Math.toRadians(0));
-    public final Pose pose9 = new Pose(135,24,Math.toRadians(0));
-    public final Pose pose10 = new Pose(85,15,Math.toRadians(0));
-    public final Pose pose11 = new Pose(107,15,Math.toRadians(0));
+    public static final Pose pose2 = new Pose(125,9,Math.toRadians(0));
+    public static final Pose pose3 = new Pose(135,9,Math.toRadians(0));
+    public static final Pose pose4 = new Pose(85,15,Math.toRadians(45));
+    public static final Pose pose5 = new Pose(135,36,Math.toRadians(0));
+    public static final Pose pose5cp1 = new Pose(106,37,Math.toRadians(0));
+    public static final Pose pose6 = new Pose(85,15,Math.toRadians(10));
+    public static final Pose pose7 = new Pose(135,24,Math.toRadians(0));
+    public static final Pose pose8 = new Pose(125,24,Math.toRadians(0));
+    public static final Pose pose9 = new Pose(135,24,Math.toRadians(0));
+    public static final Pose pose10 = new Pose(85,15,Math.toRadians(0));
+    public static final Pose pose11 = new Pose(107,15,Math.toRadians(0));
     PathChain path1,path2,path3,path4,path5,path6,path7,path8,path9,path10,path11;
     Robot robot;
     @Override
@@ -151,58 +151,46 @@ public class RedFar extends OpMode {
                     follower.followPath(path1, false);
                     setPathState(1);
                 }
-                if (pathTimer.seconds() > 8) {
-                    follower.breakFollowing();
-                    setPathState(1);
-                }
+               
                 break;
             case 1:
             /* You could check for
-            - Follower State: "if(!follower.isBusy()) {}"
+            - Follower State: "if(advance()) {}"
             - Time: "if(pathTimer.getElapsedTimeSeconds() > 1) {}"
             - Robot Position: "if(follower.getPose().getX() > 36) {}"
             */
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
-                if(!follower.isBusy()) {
+                if(advance()) {
                     /* Score Preload */
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
                     follower.followPath(path2,false);
                     setPathState(2);
                 }
-                if (pathTimer.seconds() > 8) {
-                    follower.breakFollowing();
-                    setPathState(2);
-                }
+               
                 break;
             case 2:
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup1Pose's position */
-                if(!follower.isBusy()) {
+                if(advance()) {
                     /* Grab Sample */
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
                     follower.followPath(path3,false);
                     setPathState(3);
                 }
-                if (pathTimer.seconds() > 8) {
-                    follower.breakFollowing();
-                    setPathState(3);
-                }
+               
                 break;
             case 3:
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
-                if(!follower.isBusy()) {
+                if(advance()) {
                     /* Score Sample */
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
                     follower.followPath(path4,true);
                     setPathState(4);
                 }
-                if (pathTimer.seconds() > 8) {
-                    follower.breakFollowing();
-                    setPathState(4);
-                }
+
                 break;
             case 4:
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup2Pose's position */
-                if(!follower.isBusy()) {
+                if(advance()) {
                     /* Grab Sample */
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
                     robot.gate.gateOpen();
@@ -216,27 +204,21 @@ public class RedFar extends OpMode {
                         setPathState(5);
                     }
                 }
-                if (pathTimer.seconds() > 8) {
-                    follower.breakFollowing();
-                    setPathState(5);
-                }
+
                 break;
             case 5:
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
-                if(!follower.isBusy()) {
+                if(advance()) {
                     /* Score Sample */
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
                     follower.followPath(path6,true);
                     setPathState(6);
                 }
-                if (pathTimer.seconds() > 8) {
-                    follower.breakFollowing();
-                    setPathState(6);
-                }
+
                 break;
             case 6:
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup3Pose's position */
-                if(!follower.isBusy()) {
+                if(advance()) {
                     robot.gate.gateOpen();
                     if(pathTimer.seconds()<3){
                         robot.intake.slowIntake();
@@ -249,14 +231,11 @@ public class RedFar extends OpMode {
                     }
 
                 }
-                if (pathTimer.seconds() > 8) {
-                    follower.breakFollowing();
-                    setPathState(7);
-                }
+
                 break;
             case 7:
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
-                if(!follower.isBusy()) {
+                if(advance()) {
                     /* Set the state to a Case we won't use or define, so it just stops running an new paths */
 
 
@@ -264,40 +243,31 @@ public class RedFar extends OpMode {
                         setPathState(8);
 
                 }
-                if (pathTimer.seconds() > 8) {
-                    follower.breakFollowing();
-                    setPathState(8);
-                }
+
                 break;
             case 8:
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup3Pose's position */
-                if(!follower.isBusy()) {
+                if(advance()) {
                     /* Grab Sample */
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
                     follower.followPath(path9, false);
                     setPathState(9);
                 }
-                if (pathTimer.seconds() > 8) {
-                    follower.breakFollowing();
-                    setPathState(9);
-                }
+
                 break;
             case 9:
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup3Pose's position */
-                if(!follower.isBusy()) {
+                if(advance()) {
                     /* Grab Sample */
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
                     follower.followPath(path10, true);
                     setPathState(10);
                 }
-                if (pathTimer.seconds() > 8) {
-                    follower.breakFollowing();
-                    setPathState(10);
-                }
+
                 break;
             case 10:
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup3Pose's position */
-                if(!follower.isBusy()) {
+                if(advance()) {
                     robot.gate.gateOpen();
                     if(pathTimer.seconds()<3){
                         robot.intake.slowIntake();
@@ -309,14 +279,11 @@ public class RedFar extends OpMode {
                         setPathState(11);
                     }
                 }
-                if (pathTimer.seconds() > 8) {
-                    follower.breakFollowing();
-                    setPathState(11);
-                }
+
                 break;
             case 11:
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup3Pose's position */
-                if(!follower.isBusy()) {
+                if(advance()) {
 
 
 
@@ -324,10 +291,7 @@ public class RedFar extends OpMode {
 
 
                 }
-                if (pathTimer.seconds() > 8) {
-                    follower.breakFollowing();
-                    setPathState(12);
-                }
+
                 break;
         }
     }
@@ -335,5 +299,8 @@ public class RedFar extends OpMode {
     public void setPathState(int pState) {
         pathState = pState;
         pathTimer.reset();
+    }
+    private boolean advance() {
+        return !follower.isBusy() || pathTimer.seconds() > 8;
     }
 }
