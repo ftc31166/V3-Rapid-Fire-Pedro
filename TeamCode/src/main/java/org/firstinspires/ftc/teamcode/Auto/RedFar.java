@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Auto;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.bylazar.configurables.annotations.Configurable;
@@ -68,6 +68,8 @@ public class RedFar extends OpMode {
             robot.flywheels.setTargetRPM(0);
             robot.gate.gateClosed();
         }
+        robot.turret.update();
+        robot.flywheels.update();
         // Feedback to Driver Hub for debugging
         telemetry.addData("path state", pathState);
         telemetry.addData("x", follower.getPose().getX());
@@ -140,14 +142,17 @@ public class RedFar extends OpMode {
         switch (pathState) {
             case 0:
                 robot.gate.gateOpen();
-                if(robot.gate.gatePos() == robot.gate.gateOpen){
+                if(pathTimer.seconds()<3){
                     robot.intake.slowIntake();
                 }
-                if(pathTimer.seconds()>3){
-
+                else{
                     robot.gate.gateClosed();
                     robot.intake.intakeBalls();
-                    follower.followPath(path1);
+                    follower.followPath(path1, false);
+                    setPathState(1);
+                }
+                if (pathTimer.seconds() > 8) {
+                    follower.breakFollowing();
                     setPathState(1);
                 }
                 break;
@@ -164,6 +169,10 @@ public class RedFar extends OpMode {
                     follower.followPath(path2,false);
                     setPathState(2);
                 }
+                if (pathTimer.seconds() > 8) {
+                    follower.breakFollowing();
+                    setPathState(2);
+                }
                 break;
             case 2:
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup1Pose's position */
@@ -171,6 +180,10 @@ public class RedFar extends OpMode {
                     /* Grab Sample */
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
                     follower.followPath(path3,false);
+                    setPathState(3);
+                }
+                if (pathTimer.seconds() > 8) {
+                    follower.breakFollowing();
                     setPathState(3);
                 }
                 break;
@@ -182,6 +195,10 @@ public class RedFar extends OpMode {
                     follower.followPath(path4,true);
                     setPathState(4);
                 }
+                if (pathTimer.seconds() > 8) {
+                    follower.breakFollowing();
+                    setPathState(4);
+                }
                 break;
             case 4:
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup2Pose's position */
@@ -189,16 +206,19 @@ public class RedFar extends OpMode {
                     /* Grab Sample */
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
                     robot.gate.gateOpen();
-                    if(robot.gate.gatePos() == robot.gate.gateOpen){
+                    if(pathTimer.seconds()<3){
                         robot.intake.slowIntake();
                     }
-                    if(pathTimer.seconds()>3){
+                    else{
                         robot.gate.gateClosed();
                         robot.intake.intakeBalls();
-
-                        follower.followPath(path5);
+                        follower.followPath(path5, false);
                         setPathState(5);
                     }
+                }
+                if (pathTimer.seconds() > 8) {
+                    follower.breakFollowing();
+                    setPathState(5);
                 }
                 break;
             case 5:
@@ -206,16 +226,31 @@ public class RedFar extends OpMode {
                 if(!follower.isBusy()) {
                     /* Score Sample */
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
-                    follower.followPath(path5,false);
+                    follower.followPath(path6,true);
+                    setPathState(6);
+                }
+                if (pathTimer.seconds() > 8) {
+                    follower.breakFollowing();
                     setPathState(6);
                 }
                 break;
             case 6:
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup3Pose's position */
                 if(!follower.isBusy()) {
-                    /* Grab Sample */
-                    /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
-                    follower.followPath(path6, true);
+                    robot.gate.gateOpen();
+                    if(pathTimer.seconds()<3){
+                        robot.intake.slowIntake();
+                    }
+                    else{
+                        robot.gate.gateClosed();
+                        robot.intake.intakeBalls();
+                        follower.followPath(path7, false);
+                        setPathState(7);
+                    }
+
+                }
+                if (pathTimer.seconds() > 8) {
+                    follower.breakFollowing();
                     setPathState(7);
                 }
                 break;
@@ -223,17 +258,15 @@ public class RedFar extends OpMode {
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
                 if(!follower.isBusy()) {
                     /* Set the state to a Case we won't use or define, so it just stops running an new paths */
-                    robot.gate.gateOpen();
-                    if(robot.gate.gatePos() == robot.gate.gateOpen){
-                        robot.intake.slowIntake();
-                    }
-                    if(pathTimer.seconds()>3){
-                        robot.gate.gateClosed();
-                        robot.intake.intakeBalls();
 
-                        follower.followPath(path7);
+
+                        follower.followPath(path8);
                         setPathState(8);
-                    }
+
+                }
+                if (pathTimer.seconds() > 8) {
+                    follower.breakFollowing();
+                    setPathState(8);
                 }
                 break;
             case 8:
@@ -241,7 +274,11 @@ public class RedFar extends OpMode {
                 if(!follower.isBusy()) {
                     /* Grab Sample */
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
-                    follower.followPath(path8, false);
+                    follower.followPath(path9, false);
+                    setPathState(9);
+                }
+                if (pathTimer.seconds() > 8) {
+                    follower.breakFollowing();
                     setPathState(9);
                 }
                 break;
@@ -250,34 +287,46 @@ public class RedFar extends OpMode {
                 if(!follower.isBusy()) {
                     /* Grab Sample */
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
-                    follower.followPath(path9, false);
+                    follower.followPath(path10, true);
+                    setPathState(10);
+                }
+                if (pathTimer.seconds() > 8) {
+                    follower.breakFollowing();
                     setPathState(10);
                 }
                 break;
             case 10:
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup3Pose's position */
                 if(!follower.isBusy()) {
-                    /* Grab Sample */
-                    /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
-                    follower.followPath(path10, false);
+                    robot.gate.gateOpen();
+                    if(pathTimer.seconds()<3){
+                        robot.intake.slowIntake();
+                    }
+                    else{
+                        robot.gate.gateClosed();
+                        robot.intake.intakeBalls();
+                        follower.followPath(path11, true);
+                        setPathState(11);
+                    }
+                }
+                if (pathTimer.seconds() > 8) {
+                    follower.breakFollowing();
                     setPathState(11);
                 }
                 break;
             case 11:
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup3Pose's position */
                 if(!follower.isBusy()) {
-                    robot.gate.gateOpen();
-                    if(robot.gate.gatePos() == robot.gate.gateOpen){
-                        robot.intake.slowIntake();
-                    }
-                    if(pathTimer.seconds()>3){
-                        robot.gate.gateClosed();
-                        robot.intake.intakeBalls();
 
-                        follower.followPath(path11, false);
+
+
                         setPathState(12);
-                    }
 
+
+                }
+                if (pathTimer.seconds() > 8) {
+                    follower.breakFollowing();
+                    setPathState(12);
                 }
                 break;
         }
