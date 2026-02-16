@@ -2,9 +2,11 @@ package org.firstinspires.ftc.teamcode.Tests;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Subsystems.Flywheels;
+
 
 @TeleOp
 public class pidTestFlywheel extends LinearOpMode {
@@ -12,6 +14,8 @@ public class pidTestFlywheel extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         Flywheels flywheels = new Flywheels(hardwareMap);
+        Servo hood = hardwareMap.get(Servo.class, "hood");
+        hood.setPosition(0.3);
          double kF = 1.0/5600;
          double kP = 0.002;
          double kI = 0;
@@ -69,12 +73,25 @@ public class pidTestFlywheel extends LinearOpMode {
                 kD -= .0001;
                 timer.reset();
             }
+
+            if (gamepad2.dpadDownWasPressed()) {
+                hood.setPosition(hood.getPosition() - 0.1);
+            } else if (gamepad2.dpadUpWasPressed()) {
+                hood.setPosition(hood.getPosition() + 0.1);
+            } else if (gamepad2.dpadRightWasPressed()) {
+                hood.setPosition(hood.getPosition() + 0.05);
+            } else if (gamepad2.dpadLeftWasPressed()) {
+                hood.setPosition(hood.getPosition() - 0.05);
+            }
+
             telemetry.addData("current", telems[0]);
             telemetry.addData("target", telems[1]);
             telemetry.addData("power", telems[2]);
             telemetry.addData("kP", kP);
             telemetry.addData("kD", kD);
             telemetry.addData("kF", kF);
+            telemetry.addLine();
+            telemetry.addData("hood position", hood.getPosition());
             telemetry.update();
         }
     }

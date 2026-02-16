@@ -1,23 +1,27 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
-
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.teamcode.Utils.Interplut;
 import org.firstinspires.ftc.teamcode.Utils.PIDController;
 
 
 public class Turret {
 
-    public double kP = 0.002;
+    public double kP = 0.004;
     public double kI = 0;
     public double kD = 0.000003;
     public double turretOffset = 0;
-     double targetTicks = 0;
-    public double TICKS_PER_REV = 1700;
-    DcMotorEx turret;
+     public double targetTicks = 0;
+    public double TICKS_PER_REV = 1673;
+    public DcMotorEx turret;
     PIDController pid;
+
 
 
 
@@ -38,16 +42,34 @@ public class Turret {
 
     public void setTargetAngle(double angleDeg) {
         double angle =  ((angleDeg + 180) % 360 + 360) % 360 - 180;
+        angle = Range.clip(angle,-100,100);
         targetTicks = angle * TICKS_PER_REV/ 360.0 ;
     }
-    public double autoAim(Pose2d drive, Pose2d goal){
-        double dx = goal.position.x - drive.position.x;
-        double dy = goal.position.y - drive.position.y;
-        double degrees = Math.toDegrees(Math.atan2(dy,dx));
-        double heading = Math.toDegrees(drive.heading.toDouble());
+    public double autoAim(Pose drive, Pose goal){
+
+//        double turretOffsetX = -3.5;
+//        double turretOffsetY = 0.0;
+//
+//        double turretX = drive.getX()
+//                + turretOffsetX * Math.cos(drive.getHeading())
+//                - turretOffsetY * Math.sin(drive.getHeading());
+//
+//        double turretY = drive.getY()
+//                + turretOffsetX * Math.sin(drive.getHeading())
+//                + turretOffsetY * Math.cos(drive.getHeading());
+
+        double dx = goal.getX() - drive.getX();
+        double dy = goal.getY() - drive.getY();
+
+        double degrees = Math.toDegrees(Math.atan2(dy, dx));
+
+        double heading = Math.toDegrees(drive.getHeading());
 
         return degrees-heading+turretOffset;
     }
+
+
+
 
     public double[] update() {
         double currentTicks = turret.getCurrentPosition();
