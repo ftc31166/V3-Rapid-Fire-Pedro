@@ -4,8 +4,13 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class Gate {
-    double gateClosed = 0.3;
-    double gateOpen = .7;
+//HEAD
+//    public double gateClosed = 0.35;
+//    public double gateOpen = .7;
+
+    public double gateClosed = 0.3;
+    public double gateOpen = .7;
+
     Servo gate;
     public Gate(HardwareMap hardwareMap){
         gate = hardwareMap.get(Servo.class, "gate");
@@ -15,5 +20,8 @@ public class Gate {
     }
     public void gateClosed(){
         gate.setPosition(gateClosed);
+    }
+    public double gatePos() {
+        return gate.getPosition();
     }
 }

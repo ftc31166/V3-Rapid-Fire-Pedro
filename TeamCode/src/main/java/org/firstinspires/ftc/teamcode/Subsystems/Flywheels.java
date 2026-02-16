@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
-import com.acmerobotics.roadrunner.Pose2d;
+
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.Utils.Interplut;
 import org.firstinspires.ftc.teamcode.Utils.PIDFController;
 
 
@@ -23,6 +25,8 @@ public class Flywheels {
     public  DcMotorEx lfly;
     public DcMotorEx rfly;
      PIDFController pidf;
+    Interplut flywheelTable = new Interplut();
+
 
     public Flywheels(HardwareMap hardwareMap){
         lfly = hardwareMap.get(DcMotorEx.class,"lfly");
@@ -37,7 +41,13 @@ public class Flywheels {
         lfly.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         rfly.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         setCoeffs();
-
+        flywheelTable.addPoint(49,2800);
+        flywheelTable.addPoint(70,3000);
+        flywheelTable.addPoint(101,3550);
+        flywheelTable.addPoint(107,3700);
+        flywheelTable.addPoint(125,4000);
+        flywheelTable.addPoint(135,4600);
+        flywheelTable.addPoint(156,5500);
     }
     public void stop(){
         lfly.setPower(0);
@@ -47,14 +57,12 @@ public class Flywheels {
         pidf = new PIDFController(kP, kI, kD,kF);
     }
 
-    public double distanceToRPM(Pose2d drive, Pose2d goal){
-        double dx = goal.position.x - drive.position.x;
-        double dy = goal.position.y - drive.position.y;
-        double dist = Math.hypot(dy,dx);
+    public double distanceToRPM(Pose drive, Pose goal, double posOffset){
+
+        double dist = drive.distanceFrom(goal);
 
 
-
-        return (23.2906 * (dist) + 1525);//equation for auto power that we used for ftc
+        return flywheelTable.getInterpolatedValue(dist+posOffset);//equation for auto power that we used for ftc
     }
     public void setTargetRPM( double target){
         targetRPM = target;
@@ -75,5 +83,9 @@ public class Flywheels {
         rfly.setPower(power);
         double[] ret = {getRPM(), targetRPM, power};
         return ret;
+    }
+
+    public boolean atRPM() {
+        return Math.abs(getRPM() - targetRPM) < 75;
     }
 }

@@ -1,62 +1,67 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
-import com.acmerobotics.roadrunner.Pose2d;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.drive.PinpointDrive;
+import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.Pose;
+import com.pedropathing.math.Vector;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.Utils.Interplut;
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 public class Robot {
 
 
-    public PinpointDrive drive;
+    public Follower drive;
+
     public Flywheels flywheels;
     public Gate gate;
     public Intake intake;
     public Turret turret;
     public Hood hood;
+    double lastTime = 0;
+    ElapsedTime timer = new ElapsedTime();
+    Pose goal;
+    Interplut timeTable = new Interplut();
 
-    Pose2d goal;
-
-    public Robot(HardwareMap hardwareMap, Pose2d initPose, Pose2d goal){
-        drive = new PinpointDrive(hardwareMap, initPose);
+    public Robot(HardwareMap hardwareMap, Pose initPose, Pose goal){
+        drive = Constants.createFollower(hardwareMap);
+        drive.setStartingPose(initPose);
         flywheels = new Flywheels(hardwareMap);
         gate = new Gate( hardwareMap);
         intake = new Intake(hardwareMap);
         turret = new Turret(hardwareMap);
         hood = new Hood(hardwareMap);
         this.goal = goal;
+        timeTable.addPoint(49,2800);
+        timeTable.addPoint(70,3000);
+        timeTable.addPoint(101,3550);
+        timeTable.addPoint(107,3700);
+        timeTable.addPoint(125,3950);
+        timeTable.addPoint(135,4800);
+        timeTable.addPoint(156,5500);
 
     }
-    public void driveFieldCentric(double leftX, double leftY, double rightX, boolean resetImu) {
-        double y = leftY; // Remember, Y stick value is reversed
-        double x = leftX;
-        double rx = rightX;
+    
 
-        // This button choice was made so that it is hard to hit on accident,
-        // it can be freely changed based on preference.
-        // The equivalent button is start on Xbox-style controllers.
-        if(resetImu){
-            drive.resetImu();
-        }
-
-        double botHeading = drive.pose.heading.toDouble();
-
-        // Rotate the movement direction counter to the bot's rotation
-        double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
-        double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
-
-        rotX = rotX * 1.1;  // Counteract imperfect strafing
-
-        // Denominator is the largest motor power (absolute value) or 1
-        // This ensures all the powers maintain the same ratio,
-        // but only if at least one is out of the range [-1, 1]
-        double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
-        double frontLeftPower = (rotY + rotX + rx) / denominator;
-        double backLeftPower = (rotY - rotX + rx) / denominator;
-        double frontRightPower = (rotY - rotX - rx) / denominator;
-        double backRightPower = (rotY + rotX - rx) / denominator;
-        drive.customDrivePowers(frontLeftPower,backLeftPower,backRightPower,frontRightPower);
-
+    
+    public double[] autoAimMove(){
+        Pose drivePose = drive.getPose();
+        double dx = -goal.getX() + drivePose.getX();
+        double dy = -goal.getY() + drivePose.getY();
+        double degrees = Math.atan2(dy,dx);
+        
+        double distance = goal.distanceFrom(drivePose);
+        Vector velVector = drive.getVelocity();
+        double ballTimeToGoal = timeTable.getInterpolatedValue(distance);
+        double perp = velVector.getXComponent()*Math.cos(degrees) - velVector.getYComponent()*Math.sin(degrees);
+        double parallel = -(velVector.getXComponent()*Math.sin(degrees) + velVector.getYComponent()*Math.cos(degrees));
+        double angleOffset = Math.toDegrees(Math.atan2(ballTimeToGoal*perp,distance));
+        double distancePredicted = parallel*ballTimeToGoal;
+        return new double[]{turret.autoAim(drivePose,goal)-angleOffset, flywheels.distanceToRPM(drivePose,goal,distancePredicted)};
     }
 
 

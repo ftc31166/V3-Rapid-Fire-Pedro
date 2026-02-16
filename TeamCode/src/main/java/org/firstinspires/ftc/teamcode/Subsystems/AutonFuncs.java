@@ -32,6 +32,16 @@ public class AutonFuncs  {
         };
     }
 
+    public Action intakeSlow(){
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                robot.intake.slowIntake();
+                return false;
+            }
+        };
+    }
+
     public Action slowIntake(){
         return new Action() {
             @Override
@@ -65,6 +75,27 @@ public class AutonFuncs  {
         };
     }
 
+    public Action updateTurretRedFar(){
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                robot.turret.setTargetAngle(70);
+                robot.turret.update();
+                return true;
+            }
+        };
+    }
+    public Action updateTurretBlueFar(){
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                robot.turret.setTargetAngle(-70);
+                robot.turret.update();
+                return true;
+            }
+        };
+    }
+
 
 
 
@@ -73,6 +104,17 @@ public class AutonFuncs  {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 robot.flywheels.setTargetRPM(3200);
+                robot.flywheels.update();
+                return true;
+            }
+        };
+    }
+
+    public Action updateFlywheelFar(){
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                robot.flywheels.setTargetRPM(4350);
                 robot.flywheels.update();
                 return true;
             }
