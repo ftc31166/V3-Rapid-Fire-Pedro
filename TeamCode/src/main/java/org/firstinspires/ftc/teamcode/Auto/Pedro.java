@@ -1,6 +1,5 @@
 
-package org.firstinspires.ftc.teamcode.pedroPathing;
-import com.pedropathing.paths.Path;
+package org.firstinspires.ftc.teamcode.Auto;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.bylazar.configurables.annotations.Configurable;
