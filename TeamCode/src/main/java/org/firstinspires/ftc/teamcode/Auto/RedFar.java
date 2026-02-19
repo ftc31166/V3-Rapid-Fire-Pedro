@@ -56,11 +56,11 @@ public class RedFar extends OpMode {
         autonomousPathUpdate();
         if (pathState < 12) {
             robot.turret.setTargetAngle(
-                    robot.turret.autoAim(robot.drive.getPose(), Poses.redGoal)
+                    robot.turret.autoAim(follower.getPose(), Poses.redGoal)
             );
             robot.flywheels.setTargetRPM(4500);
             robot.hood.setPosition(
-                    robot.hood.distanceToRPM(robot.drive.getPose(), Poses.redGoal)
+                    robot.hood.distanceToRPM(follower.getPose(), Poses.redGoal)
             );
         } else {
             // Final safe state
