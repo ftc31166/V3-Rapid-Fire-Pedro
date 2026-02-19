@@ -7,6 +7,9 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Subsystems.Poses;
 import org.firstinspires.ftc.teamcode.Subsystems.Robot;
 
@@ -51,8 +54,9 @@ public class BlueMovingTele extends OpMode {
     @Override
     public void loop(){
         loopTime.reset();
-        robot.drive.update();
-        Pose drivepose = robot.drive.getPose();
+        robot.pinpointDriver.update();
+        Pose2D pinpointPose = robot.pinpointDriver.getPosition();
+        Pose drivepose = new Pose(pinpointPose.getX(DistanceUnit.INCH), pinpointPose.getX(DistanceUnit.INCH), pinpointPose.getHeading(AngleUnit.RADIANS) );
         telemetryM.update();
         if (!gamepad1.left_bumper) robot.drive.setTeleOpDrive(
                 -gamepad1.left_stick_y,
@@ -164,7 +168,7 @@ public class BlueMovingTele extends OpMode {
                 }
                 break;
         }
-        double[] autoAimMovingVals = robot.autoAimMove();
+        double[] autoAimMovingVals = robot.autoAimMove(drivepose);
         target = (fsm == states.REINIT) ?0:autoAimMovingVals[0];
         rpm = (fsm == states.FLYWHEELON || fsm == states.GATEOPEN||fsm == states.SHOOT) ? autoAimMovingVals[1] : 2000;
 

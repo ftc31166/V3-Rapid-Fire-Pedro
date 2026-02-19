@@ -7,6 +7,9 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Subsystems.Poses;
 import org.firstinspires.ftc.teamcode.Subsystems.Robot;
 
@@ -46,26 +49,25 @@ public class RedMovingTele extends OpMode {
     }
     @Override
     public void start(){
-        robot.drive.startTeleOpDrive(true);
+
     }
     @Override
     public void loop(){
         loopTime.reset();
-        robot.drive.update();
-        Pose drivepose = robot.drive.getPose();
+        robot.pinpointDriver.update();
+        Pose2D pinpointPose = robot.pinpointDriver.getPosition();
+        Pose drivepose = new Pose(pinpointPose.getX(DistanceUnit.INCH), pinpointPose.getX(DistanceUnit.INCH), pinpointPose.getHeading(AngleUnit.RADIANS) );
         telemetryM.update();
-        if (!gamepad1.left_bumper) robot.drive.setTeleOpDrive(
-                -gamepad1.left_stick_y,
-                -gamepad1.left_stick_x,
-                -gamepad1.right_stick_x,
-                true // Robot Centric
+        if (!gamepad1.left_bumper) robot.driveRoboCentric(
+                gamepad1.left_stick_y,
+                gamepad1.left_stick_x,
+                gamepad1.right_stick_x
         );
             //This is how it looks with slowMode on
-        else robot.drive.setTeleOpDrive(
-                -gamepad1.left_stick_y * slowModeMultiplier,
-                -gamepad1.left_stick_x * slowModeMultiplier,
-                -gamepad1.right_stick_x * slowModeMultiplier,
-                true // Robot Centric
+        else robot.driveRoboCentric(
+                gamepad1.left_stick_y * slowModeMultiplier,
+                gamepad1.left_stick_x * slowModeMultiplier,
+                gamepad1.right_stick_x * slowModeMultiplier// Robot Centric
         );
 
 
@@ -102,7 +104,7 @@ public class RedMovingTele extends OpMode {
                 break;
             case REINIT:
 
-                robot.drive.setPose(Poses.redReinit);
+                robot.pinpointDriver.setPosition(new Pose2D(DistanceUnit.INCH,Poses.redReinit.getX(),Poses.redReinit.getY(),AngleUnit.RADIANS,Poses.redReinit.getHeading()));
                 if(reinittimer.milliseconds()>300){
                     fsm = states.BASE;
                 }
@@ -164,7 +166,7 @@ public class RedMovingTele extends OpMode {
                 }
                 break;
         }
-        double[] autoAimMovingVals = robot.autoAimMove();
+        double[] autoAimMovingVals = robot.autoAimMove(drivepose);
         target = (fsm == states.REINIT) ?0:autoAimMovingVals[0];
         rpm = (fsm == states.FLYWHEELON || fsm == states.GATEOPEN||fsm == states.SHOOT) ? autoAimMovingVals[1] : 2000;
 
