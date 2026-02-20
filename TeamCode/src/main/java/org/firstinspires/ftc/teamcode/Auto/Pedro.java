@@ -1,5 +1,6 @@
 
 package org.firstinspires.ftc.teamcode.Auto;
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.bylazar.configurables.annotations.Configurable;
@@ -40,6 +41,7 @@ public class Pedro extends OpMode {
 
         pathTimer = new ElapsedTime();
         opmodeTimer = new ElapsedTime();
+        actionTimer = new ElapsedTime();
         opmodeTimer.reset();
         follower = Constants.createFollower(hardwareMap);
         robot =new Robot(hardwareMap,new Pose(72, 8, Math.toRadians(90)), Poses.redGoal);
@@ -59,11 +61,11 @@ public class Pedro extends OpMode {
         autonomousPathUpdate();
         if (pathState >= 0) {
             robot.turret.setTargetAngle(
-                    robot.turret.autoAim(robot.drive.getPose(), Poses.redGoal)
+                    robot.turret.autoAim(follower.getPose(), Poses.redGoal)
             );
             robot.flywheels.setTargetRPM(3200);
             robot.hood.setPosition(
-                    robot.hood.distanceToRPM(robot.drive.getPose(), Poses.redGoal)
+                    robot.hood.distanceToRPM(follower.getPose(), Poses.redGoal)
             );
         } else {
             // Final safe state
@@ -186,14 +188,27 @@ public class Pedro extends OpMode {
         switch (pathState){
             case 0:
                 if (advance()){
+                robot.intake.slowIntake();
                 follower.followPath(paths.Path1, true);
-                setPathState(1);
+                actionTimer.reset();
+                if (actionTimer.milliseconds() > 1000) {
+                    robot.gate.gateOpen();
+                    setPathState(1);
+                }
+                else{
+
+                }
                 }
                 break;
             case 1:
                 if (advance()) {
+                    robot.gate.gateClosed();
+                    robot.intake.intakeBalls();
                     follower.followPath(paths.Path2, true);
-                    setPathState(2);
+                    actionTimer.reset();
+                    if (actionTimer.milliseconds() > 1000) {
+                        setPathState(2);
+                    }
                 }
                 break;
             case 2:
@@ -204,32 +219,58 @@ public class Pedro extends OpMode {
                 break;
             case 3:
                 if (advance()) {
+                    robot.intake.slowIntake();
                     follower.followPath(paths.Path4, true);
-                    setPathState(4);
+                    actionTimer.reset();
+                    if (actionTimer.milliseconds() > 1000){
+                        robot.gate.gateOpen();
+                        setPathState(4);
+                    }
+
                 }
                 break;
             case 4:
                 if (advance()) {
+                    robot.gate.gateClosed();
+                    robot.intake.intakeBalls();
                     follower.followPath(paths.Path5, true);
-                    setPathState(5);
+                    actionTimer.reset();
+                    if (actionTimer.milliseconds() > 1000) {
+                        setPathState(5);
+                    }
                 }
                 break;
             case 5:
                 if (advance()) {
+                    robot.intake.slowIntake();
                     follower.followPath(paths.Path6, true);
-                    setPathState(6);
+                    actionTimer.reset();
+                    if (actionTimer.milliseconds() > 1000) {
+                        robot.gate.gateOpen();
+                        setPathState(6);
+                    }
                 }
                 break;
             case 6:
                 if (advance()) {
+                    robot.intake.intakeBalls();
                     follower.followPath(paths.Path7, true);
-                    setPathState(7);
+                    actionTimer.reset();
+                    if (actionTimer.milliseconds() > 1000){
+                        setPathState(7);
+                    }
+
                 }
                 break;
             case 7:
                 if (advance()) {
+                    robot.intake.slowIntake();
                     follower.followPath(paths.Path8, true);
-                    setPathState(-1);
+                    actionTimer.reset();
+                    if (actionTimer.milliseconds() > 1000){
+                        robot.gate.gateOpen();
+                        setPathState(-1);
+                    }
                 }
                 break;
         }
@@ -238,6 +279,7 @@ public class Pedro extends OpMode {
     public void setPathState(int pState) {
         pathState = pState;
         pathTimer.reset();
+        actionTimer.reset();
     }
 
     private boolean advance() {

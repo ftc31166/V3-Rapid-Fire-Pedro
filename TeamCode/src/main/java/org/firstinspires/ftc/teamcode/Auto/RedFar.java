@@ -150,6 +150,7 @@ public class RedFar extends OpMode {
                     robot.intake.intakeBalls();
                     follower.followPath(path1, false);
                     setPathState(1);
+
                 }
                
                 break;
