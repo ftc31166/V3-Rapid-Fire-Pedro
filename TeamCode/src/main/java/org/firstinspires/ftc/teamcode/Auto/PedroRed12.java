@@ -19,7 +19,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Autonomous(name = "Pedro Pathing Autonomous", group = "Autonomous")
 @Configurable // Panels
-public class Pedro extends OpMode {
+public class PedroRed12 extends OpMode {
     private TelemetryManager panelsTelemetry; // Panels Telemetry instance
     private Follower follower; // Pedro Pathing follower instance
     private int pathState; // Current autonomous path state (state machine)
