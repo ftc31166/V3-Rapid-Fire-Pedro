@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.Subsystems.Poses;
 import org.firstinspires.ftc.teamcode.Subsystems.Robot;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-@Autonomous(name = "Pedro Pathing Autonomous", group = "Autonomous")
+@Autonomous(name = "Red 15", group = "Autonomous")
 @Configurable // Panels
 public class PedroRed15 extends OpMode {
     private TelemetryManager panelsTelemetry; // Panels Telemetry instance

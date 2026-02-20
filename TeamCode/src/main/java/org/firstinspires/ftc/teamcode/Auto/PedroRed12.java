@@ -17,7 +17,7 @@ import com.pedropathing.paths.PathChain;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name = "Pedro Pathing Autonomous", group = "Autonomous")
+@Autonomous(name = "Red 12", group = "Autonomous")
 @Configurable // Panels
 public class PedroRed12 extends OpMode {
     private TelemetryManager panelsTelemetry; // Panels Telemetry instance
