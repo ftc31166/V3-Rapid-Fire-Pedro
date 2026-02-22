@@ -20,7 +20,6 @@ public class BlueMovingTele extends OpMode {
         BASE,
         INTAKEON,
         GATEOPEN,
-        FLYWHEELON,
         SHOOT,
         REINIT,
     }
@@ -49,27 +48,25 @@ public class BlueMovingTele extends OpMode {
     }
     @Override
     public void start(){
-        robot.drive.startTeleOpDrive(true);
+
     }
     @Override
     public void loop(){
         loopTime.reset();
         robot.pinpointDriver.update();
         Pose2D pinpointPose = robot.pinpointDriver.getPosition();
-        Pose drivepose = new Pose(pinpointPose.getX(DistanceUnit.INCH), pinpointPose.getX(DistanceUnit.INCH), pinpointPose.getHeading(AngleUnit.RADIANS) );
+        Pose drivepose = new Pose(pinpointPose.getX(DistanceUnit.INCH), pinpointPose.getY(DistanceUnit.INCH), pinpointPose.getHeading(AngleUnit.RADIANS) );
         telemetryM.update();
-        if (!gamepad1.left_bumper) robot.drive.setTeleOpDrive(
-                -gamepad1.left_stick_y,
-                -gamepad1.left_stick_x,
-                -gamepad1.right_stick_x,
-                true // Robot Centric
+        if (!gamepad1.left_bumper) robot.driveRoboCentric(
+                gamepad1.left_stick_y,
+                gamepad1.left_stick_x,
+                gamepad1.right_stick_x
         );
             //This is how it looks with slowMode on
-        else robot.drive.setTeleOpDrive(
-                -gamepad1.left_stick_y * slowModeMultiplier,
-                -gamepad1.left_stick_x * slowModeMultiplier,
-                -gamepad1.right_stick_x * slowModeMultiplier,
-                true // Robot Centric
+        else robot.driveRoboCentric(
+                gamepad1.left_stick_y * slowModeMultiplier,
+                gamepad1.left_stick_x * slowModeMultiplier,
+                gamepad1.right_stick_x * slowModeMultiplier// Robot Centric
         );
 
 
@@ -96,7 +93,7 @@ public class BlueMovingTele extends OpMode {
                     fsm = states.INTAKEON;
                 }
                 if(gamepad1.right_bumper){
-                    fsm = states.FLYWHEELON;
+                    fsm = states.SHOOT;
                 }
                 if(gamepad1.start){
                     reinittimer.reset();
@@ -106,7 +103,7 @@ public class BlueMovingTele extends OpMode {
                 break;
             case REINIT:
 
-                robot.drive.setPose(Poses.blueReinit);
+                robot.pinpointDriver.setPosition(new Pose2D(DistanceUnit.INCH,Poses.blueReinit.getX(),Poses.blueReinit.getY(),AngleUnit.RADIANS,Poses.blueReinit.getHeading()));
                 if(reinittimer.milliseconds()>300){
                     fsm = states.BASE;
                 }
@@ -120,33 +117,11 @@ public class BlueMovingTele extends OpMode {
                     fsm = states.BASE;
                 }
                 if(gamepad1.right_bumper){
-                    fsm = states.FLYWHEELON;
-
-                }
-                break;
-            case FLYWHEELON:
-
-                robot.gate.gateClosed();
-                robot.intake.stopIntake();
-
-//                if(drivepose.getX() < 20){
-//                    target = robot.turret.autoAim(drivepose, Poses.blueGoal);
-//                    rpm = robot.flywheels.distanceToRPM(drivepose, Poses.blueGoal,0);
-//                }
-//                else{
-//                    target= 70;
-//                    rpm = 4350;
-//                }
-
-                if(gamepad1.b){
-                    fsm = states.BASE;
-                }
-
-                if( gamepad1.right_trigger>.3){
 
                     fsm = states.GATEOPEN;
                 }
                 break;
+
             case GATEOPEN:
                 robot.gate.gateOpen();
                 timer.reset();
@@ -170,7 +145,7 @@ public class BlueMovingTele extends OpMode {
         }
         double[] autoAimMovingVals = robot.autoAimMove(drivepose);
         target = (fsm == states.REINIT) ?0:autoAimMovingVals[0];
-        rpm = (fsm == states.FLYWHEELON || fsm == states.GATEOPEN||fsm == states.SHOOT) ? autoAimMovingVals[1] : 2000;
+        rpm = autoAimMovingVals[1];
 
         robot.turret.setTargetAngle(target);
         robot.flywheels.setTargetRPM(rpm);

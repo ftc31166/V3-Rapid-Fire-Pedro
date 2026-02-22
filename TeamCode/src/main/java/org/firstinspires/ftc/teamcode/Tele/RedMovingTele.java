@@ -20,7 +20,6 @@ public class RedMovingTele extends OpMode {
         BASE,
         INTAKEON,
         GATEOPEN,
-        FLYWHEELON,
         SHOOT,
         REINIT,
     }
@@ -56,7 +55,7 @@ public class RedMovingTele extends OpMode {
         loopTime.reset();
         robot.pinpointDriver.update();
         Pose2D pinpointPose = robot.pinpointDriver.getPosition();
-        Pose drivepose = new Pose(pinpointPose.getX(DistanceUnit.INCH), pinpointPose.getX(DistanceUnit.INCH), pinpointPose.getHeading(AngleUnit.RADIANS) );
+        Pose drivepose = new Pose(pinpointPose.getX(DistanceUnit.INCH), pinpointPose.getY(DistanceUnit.INCH), pinpointPose.getHeading(AngleUnit.RADIANS) );
         telemetryM.update();
         if (!gamepad1.left_bumper) robot.driveRoboCentric(
                 gamepad1.left_stick_y,
@@ -94,7 +93,7 @@ public class RedMovingTele extends OpMode {
                     fsm = states.INTAKEON;
                 }
                 if(gamepad1.right_bumper){
-                    fsm = states.FLYWHEELON;
+                    fsm = states.SHOOT;
                 }
                 if(gamepad1.start){
                     reinittimer.reset();
@@ -118,33 +117,11 @@ public class RedMovingTele extends OpMode {
                     fsm = states.BASE;
                 }
                 if(gamepad1.right_bumper){
-                    fsm = states.FLYWHEELON;
-
-                }
-                break;
-            case FLYWHEELON:
-
-                robot.gate.gateClosed();
-                robot.intake.stopIntake();
-
-//                if(drivepose.getX() < 20){
-//                    target = robot.turret.autoAim(drivepose, Poses.redGoal);
-//                    rpm = robot.flywheels.distanceToRPM(drivepose, Poses.redGoal,0);
-//                }
-//                else{
-//                    target= 70;
-//                    rpm = 4350;
-//                }
-
-                if(gamepad1.b){
-                    fsm = states.BASE;
-                }
-
-                if( gamepad1.right_trigger>.3){
 
                     fsm = states.GATEOPEN;
                 }
                 break;
+
             case GATEOPEN:
                 robot.gate.gateOpen();
                 timer.reset();
@@ -168,7 +145,7 @@ public class RedMovingTele extends OpMode {
         }
         double[] autoAimMovingVals = robot.autoAimMove(drivepose);
         target = (fsm == states.REINIT) ?0:autoAimMovingVals[0];
-        rpm = (fsm == states.FLYWHEELON || fsm == states.GATEOPEN||fsm == states.SHOOT) ? autoAimMovingVals[1] : 2000;
+        rpm = autoAimMovingVals[1];
 
         robot.turret.setTargetAngle(target);
         robot.flywheels.setTargetRPM(rpm);

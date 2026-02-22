@@ -38,6 +38,8 @@ public class Robot {
 //        drive.setStartingPose(initPose);
 //        drive.update();
         pinpointDriver.setPosition(new Pose2D(DistanceUnit.INCH, initPose.getX(),initPose.getY(), AngleUnit.RADIANS,initPose.getHeading()));
+//        pinpointDriver.setOffsets();
+//        pinpointDriver.setEncoderDirections();
         flywheels = new Flywheels(hardwareMap);
         gate = new Gate( hardwareMap);
         intake = new Intake(hardwareMap);
