@@ -35,6 +35,12 @@ public class PedroRed15 extends OpMode {
     public static final Pose Path4ControlPoint1 = new Pose(104.921, 71.037);
     public static final Pose gateOpenPose = new Pose(128.594, 70.512);
     public static final Pose gateIntake = new Pose(132.817, 59.540);
+    public static final Pose Path7ControlPoint1 = new Pose(84.515, 30.207);
+    public static final Pose Path7ControlPoint2 = new Pose(110.223, 34.754);
+    public static final Pose intakeSecond = new Pose(134.836, 35.080);
+    public static final Pose Path9ControlPoint1 = new Pose(98.439, 81.479);
+    public static final Pose intakeThird = new Pose(128.277, 83.130);
+    public static final Pose Path10ControlPoint1 = new Pose(98.477, 81.571);
     Robot robot;
     @Override
     public void init() {
@@ -149,8 +155,8 @@ public class PedroRed15 extends OpMode {
 
             Path6 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(132.817, 59.540),
-                                    new Pose(88.038, 87.867)
+                                    gateIntake,
+                                    shootPoint
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(-101))
 
@@ -158,10 +164,10 @@ public class PedroRed15 extends OpMode {
 
             Path7 = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(88.038, 87.867),
-                                    new Pose(84.515, 30.207),
-                                    new Pose(110.223, 34.754),
-                                    new Pose(138.028, 34.744)
+                                    shootPoint,
+                                    Path7ControlPoint1,
+                                    Path7ControlPoint2,
+                                    intakeSecond
                             )
                     ).setTangentHeadingInterpolation()
 
@@ -169,9 +175,8 @@ public class PedroRed15 extends OpMode {
 
             Path8 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(138.028, 34.744),
-
-                                    new Pose(87.588, 88.028)
+                                    intakeSecond,
+                                    shootPoint
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
 
@@ -179,9 +184,9 @@ public class PedroRed15 extends OpMode {
 
             Path9 = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(87.588, 88.028),
-                                    new Pose(98.439, 81.479),
-                                    new Pose(128.277, 83.130)
+                                    shootPoint,
+                                    Path9ControlPoint1,
+                                    intakeThird
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
 
@@ -189,9 +194,9 @@ public class PedroRed15 extends OpMode {
 
             Path10 = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(128.277, 83.130),
-                                    new Pose(98.477, 81.571),
-                                    new Pose(88.235, 87.357)
+                                    intakeThird,
+                                    Path10ControlPoint1,
+                                    shootPoint
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
 
