@@ -212,9 +212,8 @@ public class PedroRed15 extends OpMode {
                 if (advance()){
                 robot.intake.slowIntake();
                 follower.followPath(paths.Path1, true);
-                actionTimer.reset();
-                if (actionTimer.milliseconds() > 1000) {
-                    robot.gate.gateOpen();
+                robot.gate.gateOpen();
+                if (pathTimer.milliseconds() > 1000) {
                     setPathState(1);
                 }
                 else{
@@ -227,19 +226,15 @@ public class PedroRed15 extends OpMode {
                     robot.gate.gateClosed();
                     robot.intake.intakeBalls();
                     follower.followPath(paths.Path2, true);
-                    actionTimer.reset();
-                    if (actionTimer.milliseconds() > 1000) {
-                        setPathState(2);
-                    }
+                    setPathState(2);
                 }
                 break;
             case 2:
                 if (advance()) {
                     robot.intake.slowIntake();
                     follower.followPath(paths.Path3, true);
-                    actionTimer.reset();
-                    if (actionTimer.milliseconds() > 1000){
-                        robot.gate.gateOpen();
+                    robot.gate.gateOpen();
+                    if (pathTimer.milliseconds() > 1000){
                         setPathState(3);
                     }
                 }
@@ -255,8 +250,7 @@ public class PedroRed15 extends OpMode {
             case  4:
                 if (advance()){
                     follower.followPath(paths.Path5, true);
-                    actionTimer.reset();
-                    if (actionTimer.milliseconds() > 1000) {
+                    if (pathTimer.milliseconds() > 1000) {
                         setPathState(5);
                     }
                 }
@@ -265,9 +259,8 @@ public class PedroRed15 extends OpMode {
                 if (advance()){
                     robot.intake.slowIntake();
                     follower.followPath(paths.Path6, true);
-                    actionTimer.reset();
-                    if (actionTimer.milliseconds() > 1000){
-                        robot.gate.gateOpen();
+                    robot.gate.gateOpen();
+                    if (pathTimer.milliseconds() > 1000){
                         setPathState(6);
                     }
                 }
@@ -283,9 +276,8 @@ public class PedroRed15 extends OpMode {
                 if (advance()){
                     robot.intake.slowIntake();
                     follower.followPath(paths.Path8, true);
-                    actionTimer.reset();
-                    if (actionTimer.milliseconds() > 1000){
-                        robot.gate.gateOpen();
+                    robot.gate.gateOpen();
+                    if (pathTimer.milliseconds() > 1000){
                         setPathState(8);
                     }
                 }
@@ -295,15 +287,15 @@ public class PedroRed15 extends OpMode {
                     robot.gate.gateClosed();
                     robot.intake.intakeBalls();
                     follower.followPath(paths.Path9, true);
+                    setPathState(9);
                 }
                 break;
             case 9:
                 if (advance()){
                     robot.intake.slowIntake();
                     follower.followPath(paths.Path10, true);
-                    actionTimer.reset();
-                    if (actionTimer.milliseconds() > 1000){
-                        robot.gate.gateOpen();
+                    robot.gate.gateOpen();
+                    if (pathTimer.milliseconds() > 1000){
                         setPathState(-1);
                     }
                 }
@@ -313,7 +305,6 @@ public class PedroRed15 extends OpMode {
     public void setPathState(int pState) {
         pathState = pState;
         pathTimer.reset();
-        actionTimer.reset();
     }
 
     private boolean advance() {
