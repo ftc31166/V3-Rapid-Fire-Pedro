@@ -116,7 +116,7 @@ public class BlueMovingTele extends OpMode {
                 if(gamepad1.b){
                     fsm = states.BASE;
                 }
-                if(gamepad1.right_bumper){
+                if(gamepad1.right_bumper || (drivepose.getY()-72+9) >= Math.abs(drivepose.getX()-72) ){
 
                     fsm = states.GATEOPEN;
                 }
@@ -165,4 +165,6 @@ public class BlueMovingTele extends OpMode {
         telemetryM.debug("target rpm", rpm);
         telemetryM.debug("stoblue rpm", robot.flywheels.targetRPM);
     }
+
+
 }

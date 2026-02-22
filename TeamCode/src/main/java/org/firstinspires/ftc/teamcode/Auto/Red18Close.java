@@ -15,28 +15,28 @@ import com.pedropathing.paths.PathChain;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name = "Red Far", group = "Autonomous")
+@Autonomous(name = "Red 18 close", group = "Autonomous")
 @Configurable // Panels
-public class RedFar extends OpMode {
+public class Red18Close extends OpMode {
 
     private Follower follower;
     private ElapsedTime pathTimer, actionTimer, opmodeTimer;
     private int pathState;
-    public static final Pose start = new Pose(87,9,Math.toRadians(0));
-    public static final Pose pose1 = new Pose(135,9,Math.toRadians(0));
+    public static final Pose start = new Pose(127,121,Math.toRadians(36.4));
+    public static final Pose scorePreload = new Pose(88,78,Math.toRadians(-30));
 
-    public static final Pose pose2 = new Pose(125,9,Math.toRadians(0));
-    public static final Pose pose3 = new Pose(135,9,Math.toRadians(0));
-    public static final Pose pose4 = new Pose(85,15,Math.toRadians(45));
-    public static final Pose pose5 = new Pose(135,36,Math.toRadians(0));
-    public static final Pose pose5cp1 = new Pose(106,37,Math.toRadians(0));
-    public static final Pose pose6 = new Pose(85,15,Math.toRadians(10));
-    public static final Pose pose7 = new Pose(135,24,Math.toRadians(0));
-    public static final Pose pose8 = new Pose(125,24,Math.toRadians(0));
-    public static final Pose pose9 = new Pose(135,24,Math.toRadians(0));
-    public static final Pose pose10 = new Pose(85,15,Math.toRadians(0));
-    public static final Pose pose11 = new Pose(107,15,Math.toRadians(0));
-    PathChain path1,path2,path3,path4,path5,path6,path7,path8,path9,path10,path11;
+    public static final Pose get2ndSpike = new Pose(120,60,Math.toRadians(-30));
+    public static final Pose shoot2ndSpike = new Pose(88,78,Math.toRadians(-20));
+    public static final Pose emptyGate1 = new Pose(133,60,Math.toRadians(30));
+    public static final Pose scoreGate1 = new Pose(88,78,Math.toRadians(-20));
+    public static final Pose emptyGate2 = new Pose(133,60,Math.toRadians(30));
+    public static final Pose scoreGate2 = new Pose(88,78,Math.toRadians(-55));
+    public static final Pose get3rdSpike = new Pose(120,35,Math.toRadians(-55));
+    public static final Pose shoot3rdSpike = new Pose(88,78,Math.toRadians(10));
+    public static final Pose get1stSpike = new Pose(120,84,Math.toRadians(10));
+    public static final Pose shoot1stSpike = new Pose(88,78,Math.toRadians(0));
+    public static final Pose park = new Pose(120,72,Math.toRadians(0));
+    PathChain path1,path2,path3,path4,path5,path6,path7,path8,path9,path10,path11,path12;
     Robot robot;
     @Override
     public void init() {
@@ -54,13 +54,14 @@ public class RedFar extends OpMode {
     public void loop() {
         follower.update();
         autonomousPathUpdate();
-        if (pathState < 12) {
+        Pose followPose = follower.getPose();
+        if (pathState < 13) {
             robot.turret.setTargetAngle(
-                    robot.turret.autoAim(follower.getPose(), Poses.redGoal)
+                    robot.turret.autoAim(followPose, Poses.redGoal)
             );
-            robot.flywheels.setTargetRPM(4500);
+            robot.flywheels.setTargetRPM(robot.flywheels.distanceToRPM(followPose, Poses.redGoal,0));
             robot.hood.setPosition(
-                    robot.hood.distanceToRPM(follower.getPose(), Poses.redGoal)
+                    robot.hood.distanceToRPM(followPose, Poses.redGoal)
             );
         } else {
             // Final safe state
@@ -72,9 +73,9 @@ public class RedFar extends OpMode {
         robot.flywheels.update();
         // Feedback to Driver Hub for debugging
         telemetry.addData("path state", pathState);
-        telemetry.addData("x", follower.getPose().getX());
-        telemetry.addData("y", follower.getPose().getY());
-        telemetry.addData("heading", follower.getPose().getHeading());
+        telemetry.addData("x", followPose.getX());
+        telemetry.addData("y", followPose.getY());
+        telemetry.addData("heading", followPose.getHeading());
         telemetry.update();
     }
     @Override
@@ -88,105 +89,115 @@ public class RedFar extends OpMode {
     scorePreload.setConstantInterpolation(startPose.getHeading()); */
         /* This is our grabPickup1 PathChain. We are using a single path with a BezierLine, which is a straight line. */
         path1 = follower.pathBuilder()
-                .addPath(new BezierLine(start, pose1))
-                .setLinearHeadingInterpolation(start.getHeading(), pose1.getHeading())
+                .addPath(new BezierLine(start, scorePreload))
+                .setLinearHeadingInterpolation(start.getHeading(), scorePreload.getHeading())
                 .build();
         /* This is our scorePickup1 PathChain. We are using a single path with a BezierLine, which is a straight line. */
         path2 = follower.pathBuilder()
-                .addPath(new BezierLine(pose1, pose2))
-                .setLinearHeadingInterpolation(pose1.getHeading(), pose2.getHeading())
+                .addPath(new BezierLine(scorePreload, get2ndSpike))
+                .setLinearHeadingInterpolation(scorePreload.getHeading(), get2ndSpike.getHeading())
                 .build();
         /* This is our grabPickup2 PathChain. We are using a single path with a BezierLine, which is a straight line. */
         path3 = follower.pathBuilder()
-                .addPath(new BezierLine(pose2, pose3))
-                .setLinearHeadingInterpolation(pose2.getHeading(), pose3.getHeading())
+                .addPath(new BezierLine(get2ndSpike, shoot2ndSpike))
+                .setLinearHeadingInterpolation(get2ndSpike.getHeading(), shoot2ndSpike.getHeading())
                 .build();
         /* This is our scorePickup2 PathChain. We are using a single path with a BezierLine, which is a straight line. */
         path4 = follower.pathBuilder()
-                .addPath(new BezierLine(pose3, pose4))
-                .setLinearHeadingInterpolation(pose3.getHeading(), pose4.getHeading())
+                .addPath(new BezierLine(shoot2ndSpike, emptyGate1))
+                .setLinearHeadingInterpolation(shoot2ndSpike.getHeading(), emptyGate1.getHeading())
                 .build();
         /* This is our grabPickup3 PathChain. We are using a single path with a BezierLine, which is a straight line. */
         path5 = follower.pathBuilder()
-                .addPath(new BezierCurve(pose4, pose5cp1, pose5))
-
+                .addPath(new BezierLine(emptyGate1,scoreGate1))
+                .setLinearHeadingInterpolation(shoot2ndSpike.getHeading(), scoreGate1.getHeading())
                 .setTangentHeadingInterpolation()
                 .build();
         /* This is our scorePickup3 PathChain. We are using a single path with a BezierLine, which is a straight line. */
         path6 = follower.pathBuilder()
-                .addPath(new BezierLine(pose5, pose6))
-                .setLinearHeadingInterpolation(pose5.getHeading(), pose6.getHeading())
+                .addPath(new BezierLine(scoreGate1, emptyGate2))
+                .setLinearHeadingInterpolation(scoreGate1.getHeading(), emptyGate2.getHeading())
                 .build();
         path7 = follower.pathBuilder()
-                .addPath(new BezierLine(pose6, pose7))
-                .setLinearHeadingInterpolation(pose6.getHeading(), pose7.getHeading())
+                .addPath(new BezierLine(emptyGate2, scoreGate2))
+                .setLinearHeadingInterpolation(emptyGate2.getHeading(), scoreGate2.getHeading())
                 .build();
         path8 = follower.pathBuilder()
-                .addPath(new BezierLine(pose7, pose8))
-                .setLinearHeadingInterpolation(pose7.getHeading(), pose8.getHeading())
+                .addPath(new BezierLine(scoreGate2, get3rdSpike))
+                .setLinearHeadingInterpolation(scoreGate2.getHeading(), get3rdSpike.getHeading())
                 .build();
         path9 = follower.pathBuilder()
-                .addPath(new BezierLine(pose8, pose9))
-                .setTangentHeadingInterpolation()
+                .addPath(new BezierLine(get3rdSpike, shoot3rdSpike))
+                .setLinearHeadingInterpolation(get3rdSpike.getHeading(), shoot3rdSpike.getHeading())
                 .build();
         path10 = follower.pathBuilder()
-                .addPath(new BezierLine(pose9, pose10))
-                .setLinearHeadingInterpolation(pose9.getHeading(), pose10.getHeading())
+                .addPath(new BezierLine(shoot3rdSpike, get1stSpike))
+                .setLinearHeadingInterpolation(shoot3rdSpike.getHeading(), get1stSpike.getHeading())
                 .build();
         path11 = follower.pathBuilder()
-                .addPath(new BezierLine(pose10, pose11))
-                .setTangentHeadingInterpolation()
+                .addPath(new BezierLine(get1stSpike, shoot1stSpike))
+                .setLinearHeadingInterpolation(get1stSpike.getHeading(), shoot1stSpike.getHeading())
+                .build();
+        path12 = follower.pathBuilder()
+                .addPath(new BezierLine(shoot1stSpike, park))
+                .setLinearHeadingInterpolation(shoot1stSpike.getHeading(), park.getHeading())
                 .build();
     }
     public void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
 
-                if(pathTimer.seconds()<3){
-                    robot.gate.gateOpen();
-                    robot.intake.slowIntake();
-                }
-                else{
-                    robot.gate.gateClosed();
-                    robot.intake.intakeBalls();
-                    follower.followPath(path1, false);
-                    setPathState(1);
+                follower.followPath(path1, true);
+                setPathState(1);
 
-                }
-               
+
+
                 break;
             case 1:
             /* You could check for
             - Follower State: "if(advance()) {}"
             - Time: "if(pathTimer.getElapsedTimeSeconds() > 1) {}"
-            - Robot Position: "if(follower.getPose().getX() > 36) {}"
+            - Robot Position: "if(followPose.getX() > 36) {}"
             */
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
                 if(advance()) {
-                    /* Score Preload */
-                    /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
-                    follower.followPath(path2,false);
-                    setPathState(2);
+                    robot.intake.intakeBalls();
+                    if(pathTimer.seconds()<1){
+                        robot.gate.gateOpen();
+
+                    }
+                    else{
+                        robot.gate.gateClosed();
+
+                        follower.followPath(path2, false);
+                        setPathState(2);
+                    }
                 }
-               
+
                 break;
             case 2:
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup1Pose's position */
                 if(advance()) {
-                    /* Grab Sample */
-                    /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
-                    follower.followPath(path3,false);
+                    follower.followPath(path3,true);
                     setPathState(3);
                 }
-               
+
                 break;
             case 3:
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
                 if(advance()) {
                     /* Score Sample */
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
-                    follower.followPath(path4,true);
-                    setPathState(4);
+                    robot.intake.intakeBalls();
+                    if(pathTimer.seconds()<1){
+                        robot.gate.gateOpen();
+                    }
+                    else{
+                        robot.gate.gateClosed();
+
+                        follower.followPath(path4, false);
+                        setPathState(4);
+                    }
                 }
 
                 break;
@@ -196,16 +207,9 @@ public class RedFar extends OpMode {
                     /* Grab Sample */
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
 
-                    if(pathTimer.seconds()<3){
-                        robot.gate.gateOpen();
-                        robot.intake.slowIntake();
-                    }
-                    else{
-                        robot.gate.gateClosed();
-                        robot.intake.intakeBalls();
-                        follower.followPath(path5, false);
+                        follower.followPath(path5, true);
                         setPathState(5);
-                    }
+
                 }
 
                 break;
@@ -214,8 +218,16 @@ public class RedFar extends OpMode {
                 if(advance()) {
                     /* Score Sample */
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
-                    follower.followPath(path6,true);
-                    setPathState(6);
+                    robot.intake.intakeBalls();
+                    if(pathTimer.seconds()<1){
+                        robot.gate.gateOpen();
+
+                    }
+                    else{
+                        robot.gate.gateClosed();
+                        follower.followPath(path6, false);
+                        setPathState(6);
+                    }
                 }
 
                 break;
@@ -223,16 +235,9 @@ public class RedFar extends OpMode {
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup3Pose's position */
                 if(advance()) {
 
-                    if(pathTimer.seconds()<3){
-                        robot.gate.gateOpen();
-                        robot.intake.slowIntake();
-                    }
-                    else{
-                        robot.gate.gateClosed();
-                        robot.intake.intakeBalls();
-                        follower.followPath(path7, false);
+                        follower.followPath(path7, true);
                         setPathState(7);
-                    }
+
 
                 }
 
@@ -242,9 +247,17 @@ public class RedFar extends OpMode {
                 if(advance()) {
                     /* Set the state to a Case we won't use or define, so it just stops running an new paths */
 
+                    robot.intake.intakeBalls();
+                    if(pathTimer.seconds()<1){
+                        robot.gate.gateOpen();
 
-                        follower.followPath(path8);
+                    }
+                    else{
+                        robot.gate.gateClosed();
+
+                        follower.followPath(path8, false);
                         setPathState(8);
+                    }
 
                 }
 
@@ -254,7 +267,7 @@ public class RedFar extends OpMode {
                 if(advance()) {
                     /* Grab Sample */
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
-                    follower.followPath(path9, false);
+                    follower.followPath(path9, true);
                     setPathState(9);
                 }
 
@@ -264,8 +277,17 @@ public class RedFar extends OpMode {
                 if(advance()) {
                     /* Grab Sample */
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
-                    follower.followPath(path10, true);
-                    setPathState(10);
+                    robot.intake.intakeBalls();
+                    if(pathTimer.seconds()<1){
+                        robot.gate.gateOpen();
+
+                    }
+                    else{
+                        robot.gate.gateClosed();
+
+                        follower.followPath(path10, false);
+                        setPathState(10);
+                    }
                 }
 
                 break;
@@ -273,28 +295,33 @@ public class RedFar extends OpMode {
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup3Pose's position */
                 if(advance()) {
 
-                    if(pathTimer.seconds()<3){
-                        robot.gate.gateOpen();
-                        robot.intake.slowIntake();
-                    }
-                    else{
-                        robot.gate.gateClosed();
-                        robot.intake.intakeBalls();
                         follower.followPath(path11, true);
                         setPathState(11);
-                    }
+                    
                 }
 
                 break;
             case 11:
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup3Pose's position */
                 if(advance()) {
+                    robot.intake.intakeBalls();
+                    if(pathTimer.seconds()<1){
+                        robot.gate.gateOpen();
 
+                    }
+                    else {
+                        robot.gate.gateClosed();
 
-
+                        follower.followPath(path12, false);
                         setPathState(12);
+                    }
+                }
 
-
+                break;
+            case 12:
+                /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup3Pose's position */
+                if(advance()) {
+                   setPathState(13);
                 }
 
                 break;
