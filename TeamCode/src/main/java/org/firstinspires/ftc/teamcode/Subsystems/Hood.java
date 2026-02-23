@@ -14,16 +14,17 @@ public class Hood {
     public Follower follower;
     public Hood(HardwareMap hardwareMap){
         hood = hardwareMap.get(Servo.class, "hood");
-        hood.setPosition(.1);
+        hood.setPosition(.55);
     }
 
     public void setPosition(double pos){
-        hood.setPosition(Math.max(.1,Math.min(pos,.35)));
+        hood.setPosition(Math.max(.35,Math.min(pos,.55)));
     }
     public double distanceToRPM(Pose drive, Pose goal){
         double dist = goal.distanceFrom(drive);
 
-        return dist < 75 ? 0.45 : 0.09; //old max was 0.35 -> change if not working :P
+//        return dist < 90 ? .55 : .35; //old max was 0.35 -> change if not working :P
+        return .55;
 
     }
     public double distanceToRPM(double dist){

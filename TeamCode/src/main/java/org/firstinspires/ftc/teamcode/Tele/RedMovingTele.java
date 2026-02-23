@@ -5,6 +5,7 @@ import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -14,7 +15,7 @@ import org.firstinspires.ftc.teamcode.Subsystems.Poses;
 import org.firstinspires.ftc.teamcode.Subsystems.Robot;
 
 import java.util.List;
-
+@TeleOp
 public class RedMovingTele extends OpMode {
     public enum states{
         BASE,
@@ -38,7 +39,7 @@ public class RedMovingTele extends OpMode {
     @Override
     public void init(){
         robot = new Robot(hardwareMap, Poses.redAutoEnd,Poses.redGoal);
-        telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
+
         List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
 
         for (LynxModule hub : allHubs) {
@@ -56,11 +57,11 @@ public class RedMovingTele extends OpMode {
         robot.pinpointDriver.update();
         Pose2D pinpointPose = robot.pinpointDriver.getPosition();
         Pose drivepose = new Pose(pinpointPose.getX(DistanceUnit.INCH), pinpointPose.getY(DistanceUnit.INCH), pinpointPose.getHeading(AngleUnit.RADIANS) );
-        telemetryM.update();
+
         if (!gamepad1.left_bumper) robot.driveRoboCentric(
                 gamepad1.left_stick_y,
                 gamepad1.left_stick_x,
-                gamepad1.right_stick_x
+                gamepad1.right_stick_x*.7
         );
             //This is how it looks with slowMode on
         else robot.driveRoboCentric(
@@ -93,7 +94,7 @@ public class RedMovingTele extends OpMode {
                     fsm = states.INTAKEON;
                 }
                 if(gamepad1.right_bumper){
-                    fsm = states.SHOOT;
+                    fsm = states.GATEOPEN;
                 }
                 if(gamepad1.start){
                     reinittimer.reset();
@@ -116,7 +117,7 @@ public class RedMovingTele extends OpMode {
                 if(gamepad1.b){
                     fsm = states.BASE;
                 }
-                if(gamepad1.right_bumper || (drivepose.getY()-72+9) >= Math.abs(drivepose.getX()-72)){
+                if(gamepad1.right_bumper){
 
                     fsm = states.GATEOPEN;
                 }
@@ -128,16 +129,10 @@ public class RedMovingTele extends OpMode {
                 fsm = states.SHOOT;
             case SHOOT:
 
-                if (drivepose.getX() > 20 && (timer.milliseconds() > 300)){
-                    robot.intake.slowIntake();
-                }
-                else if(drivepose.getX() < 20){
+
 
                     robot.intake.intakeBalls();
-                }
-                else{
 
-                }
                 if(gamepad1.b){
                     fsm = states.BASE;
                 }
@@ -153,16 +148,17 @@ public class RedMovingTele extends OpMode {
         robot.turret.update();
         robot.flywheels.update();
 
-        telemetryM.debug("loopTime", loopTime.milliseconds());
-        telemetryM.debug("x", drivepose.getX());
-        telemetryM.debug("y", drivepose.getY());
-        telemetryM.debug("Heading", Math.toDegrees(drivepose.getHeading()));
-        telemetryM.debug("Target Angle", target);
-        telemetryM.debug("Subtracted", target-Math.toDegrees(drivepose.getHeading()));
-        telemetryM.debug("Distance", Math.hypot(Poses.redGoal.getY()- drivepose.getY(),Poses.redGoal.getX() - drivepose.getX()));
-        telemetryM.debug("loopTime", loopTime.milliseconds());
-        telemetryM.debug("currentState", fsm);
-        telemetryM.debug("target rpm", rpm);
-        telemetryM.debug("stored rpm", robot.flywheels.targetRPM);
+        telemetry.addData("loopTime", loopTime.milliseconds());
+        telemetry.addData("x", drivepose.getX());
+        telemetry.addData("y", drivepose.getY());
+        telemetry.addData("Heading", Math.toDegrees(drivepose.getHeading()));
+        telemetry.addData("Target Angle", target);
+        telemetry.addData("Subtracted", target-Math.toDegrees(drivepose.getHeading()));
+        telemetry.addData("Distance", Math.hypot(Poses.redGoal.getY()- drivepose.getY(),Poses.redGoal.getX() - drivepose.getX()));
+        telemetry.addData("loopTime", loopTime.milliseconds());
+        telemetry.addData("currentState", fsm);
+        telemetry.addData("target rpm", rpm);
+        telemetry.addData("stored rpm", robot.flywheels.targetRPM);
+        telemetry.update();
     }
 }

@@ -8,7 +8,7 @@ public class Gate {
 //    public double gateClosed = 0.35;
 //    public double gateOpen = .7;
 
-    public double gateClosed = 0.3;
+    public double gateClosed = 0.9;
     public double gateOpen = .7;
 
     Servo gate;

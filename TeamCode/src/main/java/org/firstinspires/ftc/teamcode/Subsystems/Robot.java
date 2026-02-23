@@ -38,21 +38,22 @@ public class Robot {
 //        drive.setStartingPose(initPose);
 //        drive.update();
         pinpointDriver.setPosition(new Pose2D(DistanceUnit.INCH, initPose.getX(),initPose.getY(), AngleUnit.RADIANS,initPose.getHeading()));
-//        pinpointDriver.setOffsets();
-//        pinpointDriver.setEncoderDirections();
+        pinpointDriver.setOffsets(.5,-6.75,DistanceUnit.INCH);
+        pinpointDriver.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD,GoBildaPinpointDriver.EncoderDirection.REVERSED);
         flywheels = new Flywheels(hardwareMap);
         gate = new Gate( hardwareMap);
         intake = new Intake(hardwareMap);
         turret = new Turret(hardwareMap);
         hood = new Hood(hardwareMap);
         this.goal = goal;
-        timeTable.addPoint(49,2800);
-        timeTable.addPoint(70,3000);
-        timeTable.addPoint(101,3550);
-        timeTable.addPoint(107,3700);
-        timeTable.addPoint(125,3950);
-        timeTable.addPoint(135,4800);
-        timeTable.addPoint(156,5500);
+
+        timeTable.addPoint(49,.1);
+        timeTable.addPoint(70,.1);
+        timeTable.addPoint(101,.1);
+        timeTable.addPoint(107,.1);
+        timeTable.addPoint(125,.1);
+        timeTable.addPoint(135,.1);
+        timeTable.addPoint(156,.1);
 
          FL = hardwareMap.get(DcMotor.class, "FL");
          BL = hardwareMap.get(DcMotor.class, "BL");
@@ -86,7 +87,7 @@ public class Robot {
         double angleOffset = Math.toDegrees(Math.atan2(ballTimeToGoal*perp,distance));
         double distancePredicted = parallel*ballTimeToGoal;
         double predictedTotalDistance = distance + distancePredicted;
-        return new double[]{turret.autoAim(drivePose,goal)-angleOffset, flywheels.flywheelTable.getInterpolatedValue(predictedTotalDistance), hood.distanceToRPM(predictedTotalDistance)};
+        return new double[]{turret.autoAim(drivePose,goal)+0, flywheels.flywheelTable.getInterpolatedValue(predictedTotalDistance), hood.distanceToRPM(predictedTotalDistance)};
     }
 
     public void driveRoboCentric(double left_stick_y, double left_stick_x, double right_stick_x){

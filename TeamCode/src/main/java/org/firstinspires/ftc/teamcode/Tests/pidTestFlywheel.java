@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Subsystems.Flywheels;
+import org.firstinspires.ftc.teamcode.Subsystems.Intake;
 
 
 @TeleOp
@@ -15,7 +16,8 @@ public class pidTestFlywheel extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         Flywheels flywheels = new Flywheels(hardwareMap);
         Servo hood = hardwareMap.get(Servo.class, "hood");
-        hood.setPosition(0.3);
+        Intake intake = new Intake(hardwareMap);
+        hood.setPosition(0.35);
          double kF = 1.0/5600;
          double kP = 0.002;
          double kI = 0;
@@ -74,14 +76,17 @@ public class pidTestFlywheel extends LinearOpMode {
                 timer.reset();
             }
 
-            if (gamepad2.dpadDownWasPressed()) {
-                hood.setPosition(hood.getPosition() - 0.1);
-            } else if (gamepad2.dpadUpWasPressed()) {
-                hood.setPosition(hood.getPosition() + 0.1);
-            } else if (gamepad2.dpadRightWasPressed()) {
+            if (gamepad1.yWasPressed()) {
                 hood.setPosition(hood.getPosition() + 0.05);
-            } else if (gamepad2.dpadLeftWasPressed()) {
+            } else if (gamepad1.xWasPressed()) {
                 hood.setPosition(hood.getPosition() - 0.05);
+            }
+
+            if(gamepad1.left_trigger>.5){
+                intake.intakeBalls();
+            }
+            if(gamepad1.right_trigger>.5){
+                intake.intakeBalls();
             }
 
             telemetry.addData("current", telems[0]);

@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.Utils.PIDController;
 
 public class Turret {
 
-    public double kP = 0.004;
+    public double kP = 0.005;
     public double kI = 0;
     public double kD = 0.000003;
     public double turretOffset = 0;
@@ -42,7 +42,7 @@ public class Turret {
 
     public void setTargetAngle(double angleDeg) {
         double angle =  ((angleDeg + 180) % 360 + 360) % 360 - 180;
-        angle = Range.clip(angle,-100,100);
+
         targetTicks = angle * TICKS_PER_REV/ 360.0 ;
     }
     public double autoAim(Pose drive, Pose goal){

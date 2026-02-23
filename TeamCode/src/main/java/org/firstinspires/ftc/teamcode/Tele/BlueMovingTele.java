@@ -5,6 +5,7 @@ import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -14,7 +15,7 @@ import org.firstinspires.ftc.teamcode.Subsystems.Poses;
 import org.firstinspires.ftc.teamcode.Subsystems.Robot;
 
 import java.util.List;
-
+@TeleOp
 public class BlueMovingTele extends OpMode {
     public enum states{
         BASE,
