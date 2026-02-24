@@ -38,7 +38,8 @@ public class Robot {
 //        drive.setStartingPose(initPose);
 //        drive.update();
         pinpointDriver.setPosition(new Pose2D(DistanceUnit.INCH, initPose.getX(),initPose.getY(), AngleUnit.RADIANS,initPose.getHeading()));
-        pinpointDriver.setOffsets(.5,-6.75,DistanceUnit.INCH);
+        pinpointDriver.setOffsets(.5,-5.5,DistanceUnit.INCH);
+        pinpointDriver.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         pinpointDriver.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD,GoBildaPinpointDriver.EncoderDirection.REVERSED);
         flywheels = new Flywheels(hardwareMap);
         gate = new Gate( hardwareMap);
