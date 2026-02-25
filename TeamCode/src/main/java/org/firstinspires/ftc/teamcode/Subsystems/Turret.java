@@ -13,9 +13,9 @@ import org.firstinspires.ftc.teamcode.Utils.PIDController;
 
 public class Turret {
 
-    public double kP = 0.005;
+    public double kP = 0.008;
     public double kI = 0;
-    public double kD = 0.000003;
+    public double kD = 0.000008;
     public double turretOffset = 0;
      public double targetTicks = 0;
     public double TICKS_PER_REV = 1673;
@@ -41,13 +41,13 @@ public class Turret {
     }
 
     public void setTargetAngle(double angleDeg) {
-        double angle =  ((angleDeg + 180) % 360 + 360) % 360 - 180;
+        double angle =  wrapToRange(angleDeg, -100, 280);
 
         targetTicks = angle * TICKS_PER_REV/ 360.0 ;
     }
     public double autoAim(Pose drive, Pose goal){
 
-//        double turretOffsetX = -3.5;
+//        double turretOffsetX = -2.5;
 //        double turretOffsetY = 0.0;
 //
 //        double turretX = drive.getX()
@@ -60,6 +60,8 @@ public class Turret {
 
         double dx = goal.getX() - drive.getX();
         double dy = goal.getY() - drive.getY();
+//        double dx = goal.getX() - turretX;
+//        double dy = goal.getY() - turretY;
 
         double degrees = Math.toDegrees(Math.atan2(dy, dx));
 
@@ -78,5 +80,9 @@ public class Turret {
         turret.setPower(power);
         double[] ret = {currentTicks, targetTicks, power};
         return ret;
+    }
+    public static double wrapToRange(double angle, double min, double max) {
+        double width = max - min;
+        return ((angle - min) % width + width) % width + min;
     }
 }

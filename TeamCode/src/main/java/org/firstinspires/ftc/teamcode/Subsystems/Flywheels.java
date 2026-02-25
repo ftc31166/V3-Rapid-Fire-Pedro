@@ -42,13 +42,13 @@ public class Flywheels {
         rfly.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         setCoeffs();
 
-        flywheelTable.addPoint(49,2800);
-        flywheelTable.addPoint(70,3000);
-        flywheelTable.addPoint(101,3550);
-        flywheelTable.addPoint(107,3700);
-        flywheelTable.addPoint(125,4000);
-        flywheelTable.addPoint(135,4600);
-        flywheelTable.addPoint(156,5500);
+        flywheelTable.addPoint(60,2900);
+        flywheelTable.addPoint(102,3300);
+        flywheelTable.addPoint(110,3600);
+        flywheelTable.addPoint(80,2900);
+        flywheelTable.addPoint(120,3700);
+        flywheelTable.addPoint(130,3800);
+        flywheelTable.addPoint(160,4400);
     }
     public void stop(){
         lfly.setPower(0);

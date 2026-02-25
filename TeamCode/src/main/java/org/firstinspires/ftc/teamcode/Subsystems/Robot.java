@@ -48,13 +48,13 @@ public class Robot {
         hood = new Hood(hardwareMap);
         this.goal = goal;
 
-        timeTable.addPoint(49,.1);
-        timeTable.addPoint(70,.1);
-        timeTable.addPoint(101,.1);
-        timeTable.addPoint(107,.1);
-        timeTable.addPoint(125,.1);
-        timeTable.addPoint(135,.1);
-        timeTable.addPoint(156,.1);
+        timeTable.addPoint(60,5.57-5.07);
+        timeTable.addPoint(102,1.71-.98);
+        timeTable.addPoint(110,7.74-7);
+        timeTable.addPoint(80,3.58-3.03);
+        timeTable.addPoint(120,3.3-2.6);
+        timeTable.addPoint(130,11.50-10.77);
+        timeTable.addPoint(160,1.99-1.09);
 
          FL = hardwareMap.get(DcMotor.class, "FL");
          BL = hardwareMap.get(DcMotor.class, "BL");
@@ -88,7 +88,8 @@ public class Robot {
         double angleOffset = Math.toDegrees(Math.atan2(ballTimeToGoal*perp,distance));
         double distancePredicted = parallel*ballTimeToGoal;
         double predictedTotalDistance = distance + distancePredicted;
-        return new double[]{turret.autoAim(drivePose,goal)+0, flywheels.flywheelTable.getInterpolatedValue(predictedTotalDistance), hood.distanceToRPM(predictedTotalDistance)};
+        return new double[]{turret.autoAim(drivePose,goal)-angleOffset, flywheels.flywheelTable.getInterpolatedValue(predictedTotalDistance), hood.distanceToRPM(predictedTotalDistance)};
+//        return new double[]{turret.autoAim(drivePose,goal), flywheels.flywheelTable.getInterpolatedValue(distance), hood.distanceToRPM(distance)};
     }
 
     public void driveRoboCentric(double left_stick_y, double left_stick_x, double right_stick_x){

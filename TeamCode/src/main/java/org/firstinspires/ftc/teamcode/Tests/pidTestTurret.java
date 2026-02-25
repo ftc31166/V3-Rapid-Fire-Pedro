@@ -58,6 +58,7 @@ public class pidTestTurret extends LinearOpMode {
                 targetAng +=20;
                 timer.reset();
             }
+            targetAng += gamepad1.left_stick_x;
             if(gamepad1.dpad_up&&timer.milliseconds()>200){
                 kP += .0001;
                 timer.reset();

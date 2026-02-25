@@ -7,30 +7,37 @@ import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.Utils.Interplut;
 import org.firstinspires.ftc.teamcode.Utils.PIDController;
 //min .09 max .33
 public class Hood {
     public Servo hood;
     public Follower follower;
+    Interplut hoodTable = new Interplut();
     public Hood(HardwareMap hardwareMap){
         hood = hardwareMap.get(Servo.class, "hood");
-        hood.setPosition(.55);
+        hood.setPosition(.6);
+        hoodTable.addPoint(60,.6);
+        hoodTable.addPoint(102,.5);
+        hoodTable.addPoint(110,.4);
+        hoodTable.addPoint(80,.6);
+        hoodTable.addPoint(120,.35);
+        hoodTable.addPoint(130,.4);
+        hoodTable.addPoint(160,.35);
     }
 
     public void setPosition(double pos){
-        hood.setPosition(Math.max(.35,Math.min(pos,.55)));
+        hood.setPosition(Math.max(.35,Math.min(pos,.6)));
     }
     public double distanceToRPM(Pose drive, Pose goal){
         double dist = goal.distanceFrom(drive);
-
-//        return dist < 90 ? .55 : .35; //old max was 0.35 -> change if not working :P
-        return .55;
+        return hoodTable.getInterpolatedValue(dist);
 
     }
     public double distanceToRPM(double dist){
 
+        return hoodTable.getInterpolatedValue(dist);
 
-        return dist < 75 ? 0.45 : 0.09; //old max was 0.35 -> change if not working :P
 
     }
 
