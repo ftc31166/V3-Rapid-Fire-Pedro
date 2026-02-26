@@ -18,9 +18,9 @@ public class Hood {
         hood = hardwareMap.get(Servo.class, "hood");
         hood.setPosition(.6);
         hoodTable.addPoint(60,.6);
+        hoodTable.addPoint(80,.6);
         hoodTable.addPoint(102,.5);
         hoodTable.addPoint(110,.4);
-        hoodTable.addPoint(80,.6);
         hoodTable.addPoint(120,.35);
         hoodTable.addPoint(130,.4);
         hoodTable.addPoint(160,.35);
@@ -40,6 +40,11 @@ public class Hood {
 
 
     }
+    public double angle(double dist){
 
+        double servoPos = hoodTable.getInterpolatedValue(dist);
+        return (90-((.6-servoPos)*(1800)*(14.0/337.0) + 32.5));
+
+    }
 
 }

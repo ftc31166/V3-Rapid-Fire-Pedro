@@ -5,10 +5,13 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.math.Vector;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.SerialNumber;
 
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -27,16 +30,23 @@ public class Robot {
     public Intake intake;
     public Turret turret;
     public Hood hood;
-    double lastTime = 0;
+
     ElapsedTime timer = new ElapsedTime();
     Pose goal;
     Interplut timeTable = new Interplut();
     DcMotor FL, BL, FR, BR;
+    private Pose lastPose = new Pose(0, 0, 0);
+    private long lastTime = System.currentTimeMillis();
+
+    public Limelight3A cam;
     public Robot(HardwareMap hardwareMap, Pose initPose, Pose goal){
         pinpointDriver = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 //        drive = Constants.createFollower(hardwareMap);
 //        drive.setStartingPose(initPose);
 //        drive.update();
+        cam = hardwareMap.get(Limelight3A.class, "Webcam1");
+        cam.pipelineSwitch(1);
+        cam.start();
         pinpointDriver.setPosition(new Pose2D(DistanceUnit.INCH, initPose.getX(),initPose.getY(), AngleUnit.RADIANS,initPose.getHeading()));
         pinpointDriver.setOffsets(.5,-5.5,DistanceUnit.INCH);
         pinpointDriver.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
@@ -70,27 +80,76 @@ public class Robot {
 
 
     }
-    public double[] velocities(){
-        return (new double[]{pinpointDriver.getVelX(DistanceUnit.INCH), pinpointDriver.getVelY(DistanceUnit.INCH)});
-    }
+//    public double[] velocities(){
+//        return (new double[]{pinpointDriver.getVelX(DistanceUnit.INCH), pinpointDriver.getVelY(DistanceUnit.INCH)});
+//    }
+public double[] velocities(Pose currentPose) {
+    long currentTime = System.currentTimeMillis();
+
+    // Calculate time difference in seconds
+    double dt = (currentTime - lastTime) / 1000.0;
+
+    // Prevent division by zero if loop is too fast
+    if (dt <= 0) return new double[]{0, 0};
+
+    // Velocity = (Current Position - Last Position) / Time
+    double vx = (currentPose.getX() - lastPose.getX()) / dt;
+    double vy = (currentPose.getY() - lastPose.getY()) / dt;
+
+    // Save for next loop
+    lastPose = currentPose;
+    lastTime = currentTime;
+
+    return new double[]{vx, vy};
+}
 
     
-    public double[] autoAimMove(Pose drivePose){
-        double dx = -goal.getX() + drivePose.getX();
-        double dy = -goal.getY() + drivePose.getY();
-        double degrees = Math.atan2(dy,dx);
-        
-        double distance = goal.distanceFrom(drivePose);
-        double[] velVector = velocities();
-        double ballTimeToGoal = timeTable.getInterpolatedValue(distance);
-        double perp = velVector[0]*Math.cos(degrees) - velVector[1]*Math.sin(degrees);
+//    public double[] autoAimMove(Pose drivePose){
+//        double dx = -goal.getX() + drivePose.getX();
+//        double dy = -goal.getY() + drivePose.getY();
+//        double degrees = Math.atan2(dy,dx);
+//
+//        double distance = goal.distanceFrom(drivePose);
+//        double[] velVector = velocities();
+//        double ballTimeToGoal = timeTable.getInterpolatedValue(distance);
+//        double perp = velVector[0]*Math.cos(degrees) - velVector[1]*Math.sin(degrees);
+//        double parallel = -(velVector[0]*Math.sin(degrees) + velVector[1]*Math.cos(degrees));
+//        double angleOffset = Math.toDegrees(Math.atan2(ballTimeToGoal*perp,distance));
+//        double distancePredicted = parallel*ballTimeToGoal;
+//        double predictedTotalDistance = distance + distancePredicted;
+//        return new double[]{turret.autoAim(drivePose,goal)-angleOffset, flywheels.flywheelTable.getInterpolatedValue(predictedTotalDistance), hood.distanceToRPM(predictedTotalDistance)};
+////        return new double[]{turret.autoAim(drivePose,goal), flywheels.flywheelTable.getInterpolatedValue(distance), hood.distanceToRPM(distance)};
+//    }
+    public double[ ] autoAimMove(Pose drivePose){
+        double dx1 = -goal.getX() + drivePose.getX();
+        double dy1 = -goal.getY() + drivePose.getY();
+        double degrees = Math.atan2(dy1,dx1);
+        double dist = goal.distanceFrom(drivePose);
+//        double ballTime = timeTable.getInterpolatedValue(dist);
+        double rpm = flywheels.flywheelTable.getInterpolatedValue(dist);
+        double ballTime = rpmToTime(rpm,dist);
+        double[] velVector = velocities(drivePose);
+        double dx = goal.getPose().getX() -drivePose.getX() -velVector[0]*ballTime;
+        double dy = goal.getPose().getY() - drivePose.getY()-velVector[1]*ballTime;
         double parallel = -(velVector[0]*Math.sin(degrees) + velVector[1]*Math.cos(degrees));
-        double angleOffset = Math.toDegrees(Math.atan2(ballTimeToGoal*perp,distance));
-        double distancePredicted = parallel*ballTimeToGoal;
-        double predictedTotalDistance = distance + distancePredicted;
-        return new double[]{turret.autoAim(drivePose,goal)-angleOffset, flywheels.flywheelTable.getInterpolatedValue(predictedTotalDistance), hood.distanceToRPM(predictedTotalDistance)};
-//        return new double[]{turret.autoAim(drivePose,goal), flywheels.flywheelTable.getInterpolatedValue(distance), hood.distanceToRPM(distance)};
+        return new double[]{turret.autoAim(drivePose,goal),  rpm, hood.hoodTable.getInterpolatedValue(dist)};
+
     }
+
+    public double velToRPM(double vel){
+        double k = 1.1;
+        return k*(vel*30/(Math.PI*1.41732));
+
+    }
+    public double rpmToTime(double rpm, double dist){
+        double k = 1.1;
+        double vel=(rpm*Math.PI*1.41732/30);
+        return k*dist/(vel*Math.cos(Math.toRadians(hood.angle(dist))));
+
+    }
+
+
+
 
     public void driveRoboCentric(double left_stick_y, double left_stick_x, double right_stick_x){
         double y = -left_stick_y; // Remember, Y stick value is reversed
@@ -111,6 +170,10 @@ public class Robot {
         FR.setPower(fr);
         BR.setPower(br);
 
+    }
+
+    public void reInit(){
+        LLResult 
     }
 
 }

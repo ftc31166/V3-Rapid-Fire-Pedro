@@ -96,7 +96,7 @@ public class RedMovingTele extends OpMode {
                 if(gamepad1.right_bumper){
                     fsm = states.GATEOPEN;
                 }
-                if(gamepad1.start){
+                if(gamepad1.start ){
                     reinittimer.reset();
                     fsm = states.REINIT;
 
@@ -147,15 +147,17 @@ public class RedMovingTele extends OpMode {
         robot.hood.setPosition(autoAimMovingVals[2]);
         robot.turret.update();
         robot.flywheels.update();
-
+        double dist = Math.hypot(Poses.redGoal.getY()- drivepose.getY(),Poses.redGoal.getX() - drivepose.getX());
         telemetry.addData("loopTime", loopTime.milliseconds());
         telemetry.addData("x", drivepose.getX());
         telemetry.addData("y", drivepose.getY());
         telemetry.addData("Heading", Math.toDegrees(drivepose.getHeading()));
+
+        telemetry.addData("hoodAngle;", robot.hood.angle(dist));
         telemetry.addData("Target Angle", target);
         telemetry.addData("Subtracted", target-Math.toDegrees(drivepose.getHeading()));
-        telemetry.addData("Distance", Math.hypot(Poses.redGoal.getY()- drivepose.getY(),Poses.redGoal.getX() - drivepose.getX()));
-        telemetry.addData("loopTime", loopTime.milliseconds());
+        telemetry.addData("Distance",dist) ;
+
         telemetry.addData("currentState", fsm);
         telemetry.addData("target rpm", rpm);
         telemetry.addData("stored rpm", robot.flywheels.targetRPM);
