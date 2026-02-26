@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.Subsystems;
 
 
 import com.pedropathing.follower.Follower;
+import com.pedropathing.ftc.FTCCoordinates;
+import com.pedropathing.geometry.PedroCoordinates;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.math.Vector;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
@@ -17,6 +19,8 @@ import com.qualcomm.robotcore.util.SerialNumber;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.Utils.Interplut;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
@@ -100,41 +104,42 @@ public double[] velocities(Pose currentPose) {
     lastPose = currentPose;
     lastTime = currentTime;
 
-    return new double[]{vx, vy};
+    return new double[]{(Math.abs(vx)>1)?vx:0, (Math.abs(vy)>1)?vy:0};
 }
 
     
-//    public double[] autoAimMove(Pose drivePose){
-//        double dx = -goal.getX() + drivePose.getX();
-//        double dy = -goal.getY() + drivePose.getY();
-//        double degrees = Math.atan2(dy,dx);
-//
-//        double distance = goal.distanceFrom(drivePose);
-//        double[] velVector = velocities();
-//        double ballTimeToGoal = timeTable.getInterpolatedValue(distance);
-//        double perp = velVector[0]*Math.cos(degrees) - velVector[1]*Math.sin(degrees);
-//        double parallel = -(velVector[0]*Math.sin(degrees) + velVector[1]*Math.cos(degrees));
-//        double angleOffset = Math.toDegrees(Math.atan2(ballTimeToGoal*perp,distance));
-//        double distancePredicted = parallel*ballTimeToGoal;
-//        double predictedTotalDistance = distance + distancePredicted;
-//        return new double[]{turret.autoAim(drivePose,goal)-angleOffset, flywheels.flywheelTable.getInterpolatedValue(predictedTotalDistance), hood.distanceToRPM(predictedTotalDistance)};
-////        return new double[]{turret.autoAim(drivePose,goal), flywheels.flywheelTable.getInterpolatedValue(distance), hood.distanceToRPM(distance)};
-//    }
-    public double[ ] autoAimMove(Pose drivePose){
-        double dx1 = -goal.getX() + drivePose.getX();
-        double dy1 = -goal.getY() + drivePose.getY();
-        double degrees = Math.atan2(dy1,dx1);
-        double dist = goal.distanceFrom(drivePose);
-//        double ballTime = timeTable.getInterpolatedValue(dist);
-        double rpm = flywheels.flywheelTable.getInterpolatedValue(dist);
-        double ballTime = rpmToTime(rpm,dist);
-        double[] velVector = velocities(drivePose);
-        double dx = goal.getPose().getX() -drivePose.getX() -velVector[0]*ballTime;
-        double dy = goal.getPose().getY() - drivePose.getY()-velVector[1]*ballTime;
-        double parallel = -(velVector[0]*Math.sin(degrees) + velVector[1]*Math.cos(degrees));
-        return new double[]{turret.autoAim(drivePose,goal),  rpm, hood.hoodTable.getInterpolatedValue(dist)};
+    public double[] autoAimMove(Pose drivePose){
+        double dx = -goal.getX() + drivePose.getX();
+        double dy = -goal.getY() + drivePose.getY();
+        double degrees = Math.atan2(dy,dx);
 
+        double distance = goal.distanceFrom(drivePose);
+        double rpm = flywheels.flywheelTable.getInterpolatedValue(distance);
+        double[] velVector = velocities(drivePose);
+        double ballTimeToGoal = rpmToTime(rpm,distance);
+        double perp = velVector[0]*Math.cos(degrees) - velVector[1]*Math.sin(degrees);
+        double parallel = -(velVector[0]*Math.sin(degrees) + velVector[1]*Math.cos(degrees));
+        double angleOffset = Math.toDegrees(Math.atan2(ballTimeToGoal*perp,distance));
+
+
+        return new double[]{turret.autoAim(drivePose,goal)-angleOffset, rpm+velToRPM(parallel), hood.distanceToRPM(distance)};
+//        return new double[]{turret.autoAim(drivePose,goal), flywheels.flywheelTable.getInterpolatedValue(distance), hood.distanceToRPM(distance)};
     }
+//    public double[ ] autoAimMove(Pose drivePose){
+//        double dx1 = -goal.getX() + drivePose.getX();
+//        double dy1 = -goal.getY() + drivePose.getY();
+//        double degrees = Math.atan2(dy1,dx1);
+//        double dist = goal.distanceFrom(drivePose);
+////        double ballTime = timeTable.getInterpolatedValue(dist);
+//        double rpm = flywheels.flywheelTable.getInterpolatedValue(dist);
+//        double ballTime = rpmToTime(rpm,dist);
+//        double[] velVector = velocities(drivePose);
+//        double dx = goal.getPose().getX() -drivePose.getX() -velVector[0]*ballTime;
+//        double dy = goal.getPose().getY() - drivePose.getY()-velVector[1]*ballTime;
+//        double parallel = -(velVector[0]*Math.sin(degrees) + velVector[1]*Math.cos(degrees));
+//        return new double[]{turret.autoAim(drivePose,goal),  rpm, hood.hoodTable.getInterpolatedValue(dist)};
+//
+//    }
 
     public double velToRPM(double vel){
         double k = 1.1;
@@ -172,8 +177,19 @@ public double[] velocities(Pose currentPose) {
 
     }
 
-    public void reInit(){
-        LLResult 
+    public Pose2D getRobotPoseFromCamera() {
+
+        cam.updateRobotOrientation(pinpointDriver.getHeading(AngleUnit.RADIANS));
+        LLResult result = cam.getLatestResult();
+        Pose3D pose;
+        if((result!=null)&&result.isValid()) {
+            pose = result.getBotpose_MT2();
+            return new Pose2D(DistanceUnit.INCH,pose.getPosition().x*39.3701+72, pose.getPosition().y*39.3701+72, AngleUnit.RADIANS,pose.getOrientation().getYaw(AngleUnit.RADIANS)+90);
+        }
+        else {
+            return new Pose2D(DistanceUnit.INCH,pinpointDriver.getPosition().getX(DistanceUnit.INCH),pinpointDriver.getPosition().getY(DistanceUnit.INCH),AngleUnit.RADIANS,pinpointDriver.getHeading(AngleUnit.RADIANS));
+        }
+
     }
 
 }

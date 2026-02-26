@@ -82,6 +82,9 @@ public class RedMovingTele extends OpMode {
             robot.turret.turretOffset -= 5;
 
         }
+        if(gamepad1.xWasPressed()){
+            robot.pinpointDriver.setPosition(robot.getRobotPoseFromCamera());
+        }
 
         switch(fsm){
             case BASE:
