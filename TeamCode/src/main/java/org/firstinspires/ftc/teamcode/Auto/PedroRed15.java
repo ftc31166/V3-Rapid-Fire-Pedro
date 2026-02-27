@@ -26,15 +26,15 @@ public class PedroRed15 extends OpMode {
     private Paths paths; // Paths defined in the Paths class
     private ElapsedTime pathTimer, actionTimer, opmodeTimer;
 
-    public static final Pose start = new Pose(110, 136, 90);
+    public static final Pose start = new Pose(127,121,Math.toRadians(36.4));
     public static final Pose shootPoint = new Pose(87.758, 88.152);
     public static final Pose Path2ControlPoint1 = new Pose(92.588, 63.754);
     public static final Pose Path2ControlPoint2 = new Pose(108.000, 57.200);
     public static final Pose intakeFirst = new Pose(135.000, 58.000);
     public static final Pose Path3ControlPoint1 = new Pose(100.742, 66.315);
     public static final Pose Path4ControlPoint1 = new Pose(104.921, 71.037);
-    public static final Pose gateOpenPose = new Pose(128.594, 70.512);
-    public static final Pose gateIntake = new Pose(132.817, 59.540);
+    public static final Pose gateOpenPose = new Pose(125, 70.512);
+    public static final Pose gateIntake = new Pose(129, 59.540);
     public static final Pose Path7ControlPoint1 = new Pose(84.515, 30.207);
     public static final Pose Path7ControlPoint2 = new Pose(110.223, 34.754);
     public static final Pose intakeSecond = new Pose(134.836, 35.080);
