@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Tele;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.geometry.Pose;
+import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -11,6 +12,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.Subsystems.Poses;
 import org.firstinspires.ftc.teamcode.Subsystems.Robot;
 
@@ -45,6 +47,9 @@ public class RedMovingTele extends OpMode {
         for (LynxModule hub : allHubs) {
             hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
+        telemetry.addData("cam connected",
+        robot.cam.isConnected());
+        telemetry.addData("cam on", robot.cam.isRunning());
 
     }
     @Override
@@ -57,7 +62,8 @@ public class RedMovingTele extends OpMode {
         robot.pinpointDriver.update();
         Pose2D pinpointPose = robot.pinpointDriver.getPosition();
         Pose drivepose = new Pose(pinpointPose.getX(DistanceUnit.INCH), pinpointPose.getY(DistanceUnit.INCH), pinpointPose.getHeading(AngleUnit.RADIANS) );
-
+        robot.cam.isRunning();
+        robot.cam.isConnected();
         if (!gamepad1.left_bumper) robot.driveRoboCentric(
                 gamepad1.left_stick_y,
                 gamepad1.left_stick_x,
@@ -82,8 +88,21 @@ public class RedMovingTele extends OpMode {
             robot.turret.turretOffset -= 5;
 
         }
-        if(gamepad1.xWasPressed()){
-            robot.pinpointDriver.setPosition(robot.getRobotPoseFromCamera());
+        if(gamepad1.x){
+            robot.cam.updateRobotOrientation(robot.pinpointDriver.getHeading(AngleUnit.RADIANS));
+            LLResult result = robot.cam.getLatestResult();
+            Pose3D pose;
+
+             if((result!=null)&&result.isValid()) {
+                pose = result.getBotpose_MT2();
+                robot.pinpointDriver.setPosition(new Pose2D(DistanceUnit.INCH,pose.getPosition().x*39.3701+72, pose.getPosition().y*39.3701+72, AngleUnit.RADIANS,pose.getOrientation().getYaw(AngleUnit.RADIANS)+90));
+                 telemetry.addData("reinintpose", pose.toString());
+            }
+            else {
+                robot.pinpointDriver.setPosition( new Pose2D(DistanceUnit.INCH,robot.pinpointDriver.getPosition().getX(DistanceUnit.INCH),robot.pinpointDriver.getPosition().getY(DistanceUnit.INCH),AngleUnit.RADIANS,robot.pinpointDriver.getHeading(AngleUnit.RADIANS)));
+                telemetry.addLine("notagslol");
+            }
+
         }
 
         switch(fsm){

@@ -52,7 +52,7 @@ public class Robot {
         cam.pipelineSwitch(1);
         cam.start();
         pinpointDriver.setPosition(new Pose2D(DistanceUnit.INCH, initPose.getX(),initPose.getY(), AngleUnit.RADIANS,initPose.getHeading()));
-        pinpointDriver.setOffsets(.5,-5.5,DistanceUnit.INCH);
+        pinpointDriver.setOffsets(.4375,-5.4125,DistanceUnit.INCH);
         pinpointDriver.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         pinpointDriver.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD,GoBildaPinpointDriver.EncoderDirection.REVERSED);
         flywheels = new Flywheels(hardwareMap);
@@ -109,20 +109,20 @@ public double[] velocities(Pose currentPose) {
 
     
     public double[] autoAimMove(Pose drivePose){
-        double dx = -goal.getX() + drivePose.getX();
-        double dy = -goal.getY() + drivePose.getY();
-        double degrees = Math.atan2(dy,dx);
-
+//        double dx = -goal.getX() + drivePose.getX();
+//        double dy = -goal.getY() + drivePose.getY();
+//        double degrees = Math.atan2(dy,dx);
+//
         double distance = goal.distanceFrom(drivePose);
         double rpm = flywheels.flywheelTable.getInterpolatedValue(distance);
-        double[] velVector = velocities(drivePose);
-        double ballTimeToGoal = rpmToTime(rpm,distance);
-        double perp = velVector[0]*Math.cos(degrees) - velVector[1]*Math.sin(degrees);
-        double parallel = -(velVector[0]*Math.sin(degrees) + velVector[1]*Math.cos(degrees));
-        double angleOffset = Math.toDegrees(Math.atan2(ballTimeToGoal*perp,distance));
+//        double[] velVector = velocities(drivePose);
+//        double ballTimeToGoal = rpmToTime(rpm,distance);
+//        double perp = velVector[0]*Math.cos(degrees) - velVector[1]*Math.sin(degrees);
+//        double parallel = -(velVector[0]*Math.sin(degrees) + velVector[1]*Math.cos(degrees));
+//        double angleOffset = Math.toDegrees(Math.atan2(ballTimeToGoal*perp,distance));
 
 
-        return new double[]{turret.autoAim(drivePose,goal)-angleOffset, rpm+velToRPM(parallel), hood.distanceToRPM(distance)};
+        return new double[]{turret.autoAim(drivePose,goal), rpm, hood.distanceToRPM(distance)};
 //        return new double[]{turret.autoAim(drivePose,goal), flywheels.flywheelTable.getInterpolatedValue(distance), hood.distanceToRPM(distance)};
     }
 //    public double[ ] autoAimMove(Pose drivePose){
@@ -141,17 +141,17 @@ public double[] velocities(Pose currentPose) {
 //
 //    }
 
-    public double velToRPM(double vel){
-        double k = 1.1;
-        return k*(vel*30/(Math.PI*1.41732));
-
-    }
-    public double rpmToTime(double rpm, double dist){
-        double k = 1.1;
-        double vel=(rpm*Math.PI*1.41732/30);
-        return k*dist/(vel*Math.cos(Math.toRadians(hood.angle(dist))));
-
-    }
+//    public double velToRPM(double vel){
+//        double k = 1.1;
+//        return k*(vel*30/(Math.PI*1.41732));
+//
+//    }
+//    public double rpmToTime(double rpm, double dist){
+//        double k = 1.1;
+//        double vel=(rpm*Math.PI*1.41732/30);
+//        return k*dist/(vel*Math.cos(Math.toRadians(hood.angle(dist))));
+//
+//    }
 
 
 

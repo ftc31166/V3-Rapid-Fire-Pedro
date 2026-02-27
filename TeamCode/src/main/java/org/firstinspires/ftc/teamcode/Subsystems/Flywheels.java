@@ -16,7 +16,7 @@ public class Flywheels {
      public double targetRPM = 0;
     public double closeRPM = 3000;
     public double kF = 1.0/5600;
-    public double kP = 0.002;
+    public double kP = 0.003;
     public double kI = 0;
     public double kD = 0;
     double TICKS_PER_REV = 28.0;
