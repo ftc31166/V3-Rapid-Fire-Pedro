@@ -16,7 +16,7 @@ public class Flywheels {
      public double targetRPM = 0;
     public double closeRPM = 3000;
     public double kF = 1.0/5600;
-    public double kP = 0.003;
+    public double kP = 0.004;
     public double kI = 0;
     public double kD = 0;
     double TICKS_PER_REV = 28.0;
@@ -42,12 +42,13 @@ public class Flywheels {
         rfly.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         setCoeffs();
 
+
+        flywheelTable.addPoint(40,2900);
         flywheelTable.addPoint(60,2900);
-        flywheelTable.addPoint(102,3300);
-        flywheelTable.addPoint(110,3600);
-        flywheelTable.addPoint(80,2900);
-        flywheelTable.addPoint(120,3700);
-        flywheelTable.addPoint(130,3800);
+        flywheelTable.addPoint(80,3000);
+        flywheelTable.addPoint(100,3400);
+        flywheelTable.addPoint(120,3800);
+        flywheelTable.addPoint(140,4100);
         flywheelTable.addPoint(160,4400);
     }
     public void stop(){

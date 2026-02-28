@@ -17,13 +17,14 @@ public class Hood {
     public Hood(HardwareMap hardwareMap){
         hood = hardwareMap.get(Servo.class, "hood");
         hood.setPosition(.6);
+        hoodTable.addPoint(40,.6);
         hoodTable.addPoint(60,.6);
         hoodTable.addPoint(80,.6);
-        hoodTable.addPoint(102,.5);
-        hoodTable.addPoint(110,.4);
-        hoodTable.addPoint(120,.35);
-        hoodTable.addPoint(130,.4);
+        hoodTable.addPoint(100,.55);
+        hoodTable.addPoint(120,.5);
+        hoodTable.addPoint(140,.35);
         hoodTable.addPoint(160,.35);
+
     }
 
     public void setPosition(double pos){

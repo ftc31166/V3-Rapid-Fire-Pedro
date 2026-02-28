@@ -15,7 +15,7 @@ public class Turret {
 
     public double kP = 0.01;
     public double kI = 0;
-    public double kD = 0.000013;
+    public double kD = 0.00002;
     public double turretOffset = 0;
      public double targetTicks = 0;
     public double TICKS_PER_REV = 1673;

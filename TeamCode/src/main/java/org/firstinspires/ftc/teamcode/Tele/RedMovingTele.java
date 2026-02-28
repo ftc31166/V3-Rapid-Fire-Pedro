@@ -33,6 +33,7 @@ public class RedMovingTele extends OpMode {
     ElapsedTime loopTime = new ElapsedTime();
     ElapsedTime timer = new ElapsedTime();
     ElapsedTime reinittimer = new ElapsedTime();
+    ElapsedTime autoLocalizeTimer = new ElapsedTime();
 
     private double slowModeMultiplier = 0.5;
     double rpm = 0;
@@ -54,7 +55,7 @@ public class RedMovingTele extends OpMode {
     }
     @Override
     public void start(){
-
+        autoLocalizeTimer.reset();
     }
     @Override
     public void loop(){
@@ -62,8 +63,21 @@ public class RedMovingTele extends OpMode {
         robot.pinpointDriver.update();
         Pose2D pinpointPose = robot.pinpointDriver.getPosition();
         Pose drivepose = new Pose(pinpointPose.getX(DistanceUnit.INCH), pinpointPose.getY(DistanceUnit.INCH), pinpointPose.getHeading(AngleUnit.RADIANS) );
-        robot.cam.isRunning();
-        robot.cam.isConnected();
+
+//        if(autoLocalizeTimer.milliseconds()>2000){
+//            robot.cam.updateRobotOrientation(robot.pinpointDriver.getHeading(AngleUnit.RADIANS));
+//            LLResult result = robot.cam.getLatestResult();
+//            Pose3D pose;
+//            if((result!=null)&&result.isValid()) {
+//                pose = result.getBotpose();
+//                robot.pinpointDriver.setPosition(new Pose2D(DistanceUnit.INCH,pose.getPosition().x*39.3701+72, pose.getPosition().y*39.3701+72, AngleUnit.DEGREES,pose.getOrientation().getYaw(AngleUnit.DEGREES)-90));
+//                telemetry.addData("reinintpose", pose.toString());
+//            }
+//            else {
+//                telemetry.addLine("notagslol");
+//            }
+//            autoLocalizeTimer.reset();
+//        }
         if (!gamepad1.left_bumper) robot.driveRoboCentric(
                 gamepad1.left_stick_y,
                 gamepad1.left_stick_x,
@@ -94,12 +108,11 @@ public class RedMovingTele extends OpMode {
             Pose3D pose;
 
              if((result!=null)&&result.isValid()) {
-                pose = result.getBotpose_MT2();
-                robot.pinpointDriver.setPosition(new Pose2D(DistanceUnit.INCH,pose.getPosition().x*39.3701+72, pose.getPosition().y*39.3701+72, AngleUnit.RADIANS,pose.getOrientation().getYaw(AngleUnit.RADIANS)+90));
+                pose = result.getBotpose();
+                robot.pinpointDriver.setPosition(new Pose2D(DistanceUnit.INCH,pose.getPosition().x*39.3701+72, pose.getPosition().y*39.3701+72, AngleUnit.DEGREES,pose.getOrientation().getYaw(AngleUnit.DEGREES)-90));
                  telemetry.addData("reinintpose", pose.toString());
             }
             else {
-                robot.pinpointDriver.setPosition( new Pose2D(DistanceUnit.INCH,robot.pinpointDriver.getPosition().getX(DistanceUnit.INCH),robot.pinpointDriver.getPosition().getY(DistanceUnit.INCH),AngleUnit.RADIANS,robot.pinpointDriver.getHeading(AngleUnit.RADIANS)));
                 telemetry.addLine("notagslol");
             }
 
@@ -153,20 +166,24 @@ public class RedMovingTele extends OpMode {
 
 
 
+                if (drivepose.getY() < 50) {
+                    robot.intake.slowIntake();
+                } else {
                     robot.intake.intakeBalls();
+                }
 
                 if(gamepad1.b){
                     fsm = states.BASE;
                 }
                 break;
         }
-        double[] autoAimMovingVals = robot.autoAimMove(drivepose);
-        target = (fsm == states.REINIT) ?0:autoAimMovingVals[0];
-        rpm = autoAimMovingVals[1];
+
+        target = robot.turret.autoAim(drivepose,Poses.redGoal);
+        rpm = robot.flywheels.distanceToRPM(drivepose,Poses.redGoal,0);
+        robot.hood.distanceToRPM(drivepose,Poses.redGoal);
 
         robot.turret.setTargetAngle(target);
         robot.flywheels.setTargetRPM(rpm);
-        robot.hood.setPosition(autoAimMovingVals[2]);
         robot.turret.update();
         robot.flywheels.update();
         double dist = Math.hypot(Poses.redGoal.getY()- drivepose.getY(),Poses.redGoal.getX() - drivepose.getX());
@@ -174,15 +191,11 @@ public class RedMovingTele extends OpMode {
         telemetry.addData("x", drivepose.getX());
         telemetry.addData("y", drivepose.getY());
         telemetry.addData("Heading", Math.toDegrees(drivepose.getHeading()));
-
-        telemetry.addData("hoodAngle;", robot.hood.angle(dist));
         telemetry.addData("Target Angle", target);
         telemetry.addData("Subtracted", target-Math.toDegrees(drivepose.getHeading()));
         telemetry.addData("Distance",dist) ;
-
         telemetry.addData("currentState", fsm);
         telemetry.addData("target rpm", rpm);
-        telemetry.addData("stored rpm", robot.flywheels.targetRPM);
         telemetry.update();
     }
 }
