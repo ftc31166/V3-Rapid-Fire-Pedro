@@ -180,8 +180,7 @@ public class RedMovingTele extends OpMode {
 
         target = robot.turret.autoAim(drivepose,Poses.redGoal);
         rpm = robot.flywheels.distanceToRPM(drivepose,Poses.redGoal,0);
-        robot.hood.distanceToRPM(drivepose,Poses.redGoal);
-
+        robot.hood.setPosition(robot.hood.distanceToRPM(drivepose,Poses.redGoal));
         robot.turret.setTargetAngle(target);
         robot.flywheels.setTargetRPM(rpm);
         robot.turret.update();
