@@ -100,7 +100,7 @@ public class RedFarNoSpike extends OpMode {
         switch (pathState) {
             case 0:
 
-                if(pathTimer.seconds()<3){
+                if(pathTimer.seconds()<3 && pathTimer.seconds() > .5){
                     robot.gate.gateOpen();
                     robot.intake.slowIntake();
                 }
@@ -123,6 +123,7 @@ public class RedFarNoSpike extends OpMode {
                 if(advance()) {
                     /* Score Preload */
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
+                    robot.intake.stopIntake();
                     follower.followPath(path2,false);
                     setPathState(2);
                 }
@@ -153,6 +154,7 @@ public class RedFarNoSpike extends OpMode {
                 if(advance()) {
                     /* Score Preload */
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
+                    robot.intake.stopIntake();
                     follower.followPath(path2,false);
                     setPathState(4);
                 }
@@ -183,6 +185,7 @@ public class RedFarNoSpike extends OpMode {
                 if(advance()) {
                     /* Score Preload */
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
+                    robot.intake.stopIntake();
                     follower.followPath(path2,false);
                     setPathState(6);
                 }
@@ -203,9 +206,24 @@ public class RedFarNoSpike extends OpMode {
                 }
 
                 break;
-
-
             case 7:
+            /* You could check for
+            - Follower State: "if(advance()) {}"
+            - Time: "if(pathTimer.getElapsedTimeSeconds() > 1) {}"
+            - Robot Position: "if(follower.getPose().getX() > 36) {}"
+            */
+                /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
+                if(advance()) {
+                    /* Score Preload */
+                    /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
+                    robot.intake.stopIntake();
+                    follower.followPath(path2,false);
+                    setPathState(8);
+                }
+
+                break;
+
+            case 8:
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup3Pose's position */
                 if(advance()) {
 
