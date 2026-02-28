@@ -235,7 +235,7 @@ public class PedroBlue15 extends OpMode {
                 break;
             case 12:
                 if (advance()) {
-                    follower.turnTo(Math.toRadians(90));
+                    follower.turnTo(Math.toRadians(180)-follower.getHeading());
                     setPathState(1);
                 }
                 break;
