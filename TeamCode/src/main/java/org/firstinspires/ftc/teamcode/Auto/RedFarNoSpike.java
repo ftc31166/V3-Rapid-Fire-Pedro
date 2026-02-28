@@ -100,15 +100,17 @@ public class RedFarNoSpike extends OpMode {
         switch (pathState) {
             case 0:
 
-                if(pathTimer.seconds()<3 && pathTimer.seconds() > .5){
+                if(pathTimer.seconds()<4 && pathTimer.seconds() > 1){
                     robot.gate.gateOpen();
                     robot.intake.slowIntake();
                 }
-                else{
+                else if(pathTimer.seconds()>4){
                     robot.gate.gateClosed();
                     robot.intake.intakeBalls();
                     follower.followPath(path1, false);
                     setPathState(1);
+
+                }else{
 
                 }
 
@@ -123,9 +125,11 @@ public class RedFarNoSpike extends OpMode {
                 if(advance()) {
                     /* Score Preload */
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
-                    robot.intake.stopIntake();
-                    follower.followPath(path2,false);
-                    setPathState(2);
+                    if(pathTimer.seconds()>1) {
+                        robot.intake.stopIntake();
+                        follower.followPath(path2, false);
+                        setPathState(2);
+                    }
                 }
 
                 break;
@@ -154,9 +158,11 @@ public class RedFarNoSpike extends OpMode {
                 if(advance()) {
                     /* Score Preload */
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
-                    robot.intake.stopIntake();
-                    follower.followPath(path2,false);
-                    setPathState(4);
+                    if(pathTimer.seconds()>1) {
+                        robot.intake.stopIntake();
+                        follower.followPath(path2, false);
+                        setPathState(4);
+                    }
                 }
 
                 break;
@@ -185,9 +191,11 @@ public class RedFarNoSpike extends OpMode {
                 if(advance()) {
                     /* Score Preload */
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
-                    robot.intake.stopIntake();
-                    follower.followPath(path2,false);
-                    setPathState(6);
+                    if(pathTimer.seconds()>1) {
+                        robot.intake.stopIntake();
+                        follower.followPath(path2, false);
+                        setPathState(6);
+                    }
                 }
 
                 break;
@@ -216,9 +224,11 @@ public class RedFarNoSpike extends OpMode {
                 if(advance()) {
                     /* Score Preload */
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
-                    robot.intake.stopIntake();
-                    follower.followPath(path2,false);
-                    setPathState(8);
+                    if(pathTimer.seconds()>1) {
+                        robot.intake.stopIntake();
+                        follower.followPath(path2, false);
+                        setPathState(8);
+                    }
                 }
 
                 break;

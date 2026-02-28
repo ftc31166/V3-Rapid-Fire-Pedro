@@ -26,9 +26,9 @@ public class PedroBlue15 extends OpMode {
     private Paths paths; // Paths defined in the Paths class
     private ElapsedTime pathTimer, actionTimer, opmodeTimer;
 
-
-    public static final Pose start = new Pose(144 - 125,120,Math.toRadians(-36.4));
+    public static final Pose start = new Pose(144 - 125,120,Math.toRadians(180-36.4));
     public static final Pose shootPoint = new Pose(144 - 87.758, 88.152);
+    public static final Pose shootPointConstantHeading = new Pose(144 - 87.758, 88.152, Math.toRadians(180));
     public static final Pose Path2ControlPoint1 = new Pose(144 - 92.58767772511847, 63.753554502369674);
     public static final Pose Path2ControlPoint2 = new Pose(144 - 108.68246445497631, 58.05308056872038);
     public static final Pose intakeFirst = new Pose(144 - 132.44075829383883, 57.65876777251183);
@@ -46,7 +46,6 @@ public class PedroBlue15 extends OpMode {
     @Override
     public void init() {
         panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
-
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(start);
 
@@ -59,8 +58,8 @@ public class PedroBlue15 extends OpMode {
         opmodeTimer = new ElapsedTime();
         actionTimer = new ElapsedTime();
         opmodeTimer.reset();
-        follower = Constants.createFollower(hardwareMap);
-        robot = new Robot(hardwareMap, start, Poses.redGoal);
+
+        robot = new Robot(hardwareMap, start, Poses.blueGoal);
     }
     @Override
     public void init_loop() {}
@@ -77,11 +76,11 @@ public class PedroBlue15 extends OpMode {
         autonomousPathUpdate();
         if (pathState >= 0) {
             robot.turret.setTargetAngle(
-                    robot.turret.autoAim(follower.getPose(), Poses.redGoal)
+                    -45
             );
-            robot.flywheels.setTargetRPM(robot.flywheels.distanceToRPM(follower.getPose(), Poses.redGoal, 0));
+            robot.flywheels.setTargetRPM(robot.flywheels.distanceToRPM(follower.getPose(), Poses.blueGoal, 0));
             robot.hood.setPosition(
-                    robot.hood.distanceToRPM(follower.getPose(), Poses.redGoal)
+                    robot.hood.distanceToRPM(follower.getPose(), Poses.blueGoal)
             );
             robot.intake.intakeBalls();
         } else {
@@ -104,7 +103,7 @@ public class PedroBlue15 extends OpMode {
 
 
     public static class Paths {
-        public PathChain Path1, Path2, Path3, Path4, Path5, Path6, Path7, Path8, Path9, Path10, Path11;
+        public PathChain Path1, Path2, Path3, Path4, Path5, Path6, Path7, Path8, Path9, Path10, Path11, TurnPath;
 
         public Paths(Follower follower) {
             Path1 = follower.pathBuilder().addPath(
@@ -112,8 +111,15 @@ public class PedroBlue15 extends OpMode {
                                     start,
                                     shootPoint
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(-36.4), Math.toRadians(78))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180-36.4), Math.toRadians(180+78))
 
+                    .build();
+            TurnPath = follower.pathBuilder().addPath(
+                    new BezierLine(
+                            shootPoint,
+                            shootPointConstantHeading
+                    )
+            ).setLinearHeadingInterpolation(follower.getHeading(), Math.toRadians(0))
                     .build();
 
             Path2 = follower.pathBuilder().addPath(
@@ -134,7 +140,7 @@ public class PedroBlue15 extends OpMode {
                                     Path3ControlPoint1,
                                     shootPoint
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(1), Math.toRadians(42))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180+1), Math.toRadians(180+42))
 
                     .build();
 
@@ -143,7 +149,7 @@ public class PedroBlue15 extends OpMode {
                                     shootPoint,
                                     Path4ControlPoint1
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(42), Math.toRadians(-35))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180+42), Math.toRadians(180+35))
                     .setVelocityConstraint(30)
                     .build();
 
@@ -154,7 +160,7 @@ public class PedroBlue15 extends OpMode {
                                     Path5ControlPoint1,
                                     shootPoint
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(-35), Math.toRadians(93))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180+35), Math.toRadians(180+93))
 
                     .build();
 
@@ -174,7 +180,7 @@ public class PedroBlue15 extends OpMode {
                                     intakeSecond,
                                     shootPoint
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-45))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180-0), Math.toRadians(180-45))
 
                     .build();
 
@@ -184,7 +190,7 @@ public class PedroBlue15 extends OpMode {
                                     Path8ControlPoint1,
                                     intakeThird
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(-45), Math.toRadians(0))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180-45), Math.toRadians(180+0))
 
                     .build();
 
@@ -194,7 +200,7 @@ public class PedroBlue15 extends OpMode {
                                     Path9ControlPoint1,
                                     shootPoint
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180+0), Math.toRadians(180+0))
 
                     .build();
             Path10 = follower.pathBuilder().addPath(
@@ -202,7 +208,7 @@ public class PedroBlue15 extends OpMode {
                                     new Pose(87.730, 88.365),
                                     new Pose(115.000, 72.000)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180+0), Math.toRadians(180+0))
 
                     .build();
             Path11 = follower.pathBuilder().addPath(
@@ -210,7 +216,7 @@ public class PedroBlue15 extends OpMode {
                             Path4ControlPoint1,
                             gateOpenPose
                     )
-            ).setLinearHeadingInterpolation(Math.toRadians(-35), Math.toRadians(-33))
+            ).setLinearHeadingInterpolation(Math.toRadians(180-35), Math.toRadians(180-33))
                     .setVelocityConstraint(5)
             .build();
 
@@ -223,7 +229,15 @@ public class PedroBlue15 extends OpMode {
         switch (pathState){
             case 0:
                 follower.followPath(paths.Path1, true);
-                setPathState(1);
+                if (pathTimer.seconds() > 1) {
+                    setPathState(12);
+                }
+                break;
+            case 12:
+                if (advance()) {
+                    follower.turnTo(Math.toRadians(90));
+                    setPathState(1);
+                }
                 break;
           case 1:
                 if (advance()){
@@ -240,7 +254,7 @@ public class PedroBlue15 extends OpMode {
                 break;
             case 2:
                 if (advance()) {
-                    follower.followPath(paths.Path3, true);
+                    follower.followPath(paths.Path3, false);
                     setPathState(3);
                 }
                 break;
@@ -260,23 +274,23 @@ public class PedroBlue15 extends OpMode {
                 if (advance()){
                     robot.intake.intakeBalls();
                     if (pathTimer.milliseconds() < 4000){
-                        follower.followPath(paths.Path4, true);
+                        follower.followPath(paths.Path4, false);
                         follower.followPath(paths.Path11, true);
                     }
                     else{
                         setPathState(4);
                     }
                 }
+                break;
             case 4:
                 if (advance()){
-                    follower.followPath(paths.Path5, true);
+                    follower.followPath(paths.Path5, false);
                     setPathState(5);
                 }
                 break;
             case  5:
                 if (advance()){
                     robot.intake.intakeBalls();
-                    if (advance()) {
                         if (pathTimer.milliseconds() < 3000 && pathTimer.milliseconds() > 500) {
                             robot.gate.gateOpen();
                         }
@@ -285,12 +299,11 @@ public class PedroBlue15 extends OpMode {
                             follower.followPath(paths.Path6, true);
                             setPathState(6);
                         }
-                    }
                 }
                 break;
             case 6:
                 if (advance()){
-                    follower.followPath(paths.Path7, true);
+                    follower.followPath(paths.Path7, false);
                     setPathState(7);
                 }
                 break;
@@ -309,7 +322,7 @@ public class PedroBlue15 extends OpMode {
                 break;
             case 8:
                 if (advance()){
-                    follower.followPath(paths.Path9, true);
+                    follower.followPath(paths.Path9, false);
                     setPathState(9);
                 }
                 break;
@@ -327,7 +340,7 @@ public class PedroBlue15 extends OpMode {
                 break;
             case 10:
                 if(advance()){
-                    follower.followPath(paths.Path10, true);
+                    follower.followPath(paths.Path10, false);
                     setPathState(-1);
                 }
                 break;
