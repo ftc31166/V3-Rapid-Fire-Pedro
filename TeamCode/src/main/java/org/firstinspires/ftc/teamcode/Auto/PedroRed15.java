@@ -28,19 +28,19 @@ public class PedroRed15 extends OpMode {
 
     public static final Pose start = new Pose(127,121,Math.toRadians(36.4));
     public static final Pose shootPoint = new Pose(87.758, 88.152);
-    public static final Pose Path2ControlPoint1 = new Pose(92.588, 63.754);
-    public static final Pose Path2ControlPoint2 = new Pose(108.000, 57.200);
-    public static final Pose intakeFirst = new Pose(135.000, 58.000);
-    public static final Pose Path3ControlPoint1 = new Pose(100.742, 66.315);
-    public static final Pose Path4ControlPoint1 = new Pose(104.921, 71.037);
-    public static final Pose gateOpenPose = new Pose(125, 70.512);
-    public static final Pose gateIntake = new Pose(129, 59.540);
-    public static final Pose Path7ControlPoint1 = new Pose(84.515, 30.207);
-    public static final Pose Path7ControlPoint2 = new Pose(110.223, 34.754);
-    public static final Pose intakeSecond = new Pose(134.836, 35.080);
-    public static final Pose Path9ControlPoint1 = new Pose(98.439, 81.479);
-    public static final Pose intakeThird = new Pose(128.277, 83.130);
-    public static final Pose Path10ControlPoint1 = new Pose(98.477, 81.571);
+    public static final Pose Path2ControlPoint1 = new Pose(92.58767772511847, 63.753554502369674);
+    public static final Pose Path2ControlPoint2 = new Pose(108.68246445497631, 58.05308056872038);
+    public static final Pose intakeFirst = new Pose(132.44075829383883, 57.65876777251183);
+    public static final Pose Path3ControlPoint1 = new Pose(100.74241706161138, 66.31516587677724);
+    public static final Pose Path4ControlPoint1 = new Pose(102.19130439591434, 69.33107887649516);
+    public static final Pose gateOpenPose = new Pose(126.6, 68.8);
+    public static final Pose gateIntake = new Pose(130.42841058027835, 58.857781194180085);
+    public static final Pose Path7ControlPoint1 = new Pose(84.51536275003177, 30.206816459931296);
+    public static final Pose Path7ControlPoint2 = new Pose(110.22318569682625, 34.75392502225884);
+    public static final Pose intakeSecond = new Pose(132.788510565347, 34.39766738374245);
+    public static final Pose Path9ControlPoint1 = new Pose(98.4385296443562, 81.47862874460121);
+    public static final Pose intakeThird = new Pose(126.0585366123422, 83.130);
+    public static final Pose Path10ControlPoint1 = new Pose(98.47724620770128, 81.57117852975497);
     Robot robot;
     @Override
     public void init() {
@@ -209,93 +209,92 @@ public class PedroRed15 extends OpMode {
     public void autonomousPathUpdate() {
         switch (pathState){
             case 0:
-                if (advance()){
-                robot.intake.slowIntake();
                 follower.followPath(paths.Path1, true);
-                robot.gate.gateOpen();
-                if (pathTimer.milliseconds() > 1000) {
-                    setPathState(1);
-                }
-                else{
-
-                }
-                }
+                setPathState(1);
                 break;
-            case 1:
-                if (advance()) {
-                    robot.gate.gateClosed();
+          case 1:
+                if (advance()){
                     robot.intake.intakeBalls();
-                    follower.followPath(paths.Path2, true);
-                    setPathState(2);
+                    if (pathTimer.milliseconds() < 1000){
+                        robot.gate.gateOpen();
+
+                    }
+                    else{
+                        robot.gate.gateClosed();
+                        follower.followPath(paths.Path2, true);
+                        setPathState(2);
+                    }
                 }
-                break;
             case 2:
                 if (advance()) {
-                    robot.intake.slowIntake();
                     follower.followPath(paths.Path3, true);
-                    robot.gate.gateOpen();
-                    if (pathTimer.milliseconds() > 1000){
-                        setPathState(3);
-                    }
+                    setPathState(3);
                 }
                 break;
             case 3:
-                if (advance()){
-                    robot.gate.gateClosed();
-                    follower.followPath(paths.Path4, true);
-                    robot.intake.intakeBalls();
-                    setPathState(4);
+                if (advance()) {
+                    robot.intake.slowIntake();
+                    if (pathTimer.milliseconds() < 1000){
+                        robot.gate.gateOpen();
+                    }
+                    else {
+                        robot.gate.gateClosed();
+                        follower.followPath(paths.Path4, true);
+                        setPathState(4);
+                    }
                 }
                 break;
-            case  4:
+            case 4:
                 if (advance()){
                     follower.followPath(paths.Path5, true);
-                    if (pathTimer.milliseconds() > 1000) {
-                        setPathState(5);
-                    }
+                    setPathState(5);
                 }
                 break;
-            case 5:
+            case  5:
                 if (advance()){
-                    robot.intake.slowIntake();
                     follower.followPath(paths.Path6, true);
-                    robot.gate.gateOpen();
-                    if (pathTimer.milliseconds() > 1000){
-                        setPathState(6);
-                    }
+                    setPathState(6);
                 }
                 break;
             case 6:
-               if ((advance())){
-                   robot.intake.intakeBalls();
-                   follower.followPath(paths.Path7, true);
-                   setPathState(7);
-               }
-               break;
-            case 7:
                 if (advance()){
-                    robot.intake.slowIntake();
-                    follower.followPath(paths.Path8, true);
-                    robot.gate.gateOpen();
-                    if (pathTimer.milliseconds() > 1000){
-                        setPathState(8);
+                    robot.intake.intakeBalls();
+                    if (pathTimer.milliseconds() < 1000){
+                        robot.gate.gateOpen();
+                    }
+                    else{
+                        robot.gate.gateClosed();
+                        follower.followPath(paths.Path7, true);
+                        setPathState(7);
                     }
                 }
                 break;
+            case 7:
+               if ((advance())){
+                   follower.followPath(paths.Path8, true);
+                   setPathState(8);
+               }
+               break;
             case 8:
                 if (advance()){
-                    robot.gate.gateClosed();
-                    robot.intake.intakeBalls();
                     follower.followPath(paths.Path9, true);
                     setPathState(9);
                 }
                 break;
             case 9:
                 if (advance()){
-                    robot.intake.slowIntake();
                     follower.followPath(paths.Path10, true);
-                    robot.gate.gateOpen();
-                    if (pathTimer.milliseconds() > 1000){
+                    setPathState(10);
+                }
+                break;
+            case 10:
+                if (advance()){
+                    robot.intake.intakeBalls();
+                    if (pathTimer.milliseconds() < 1000){
+                        robot.gate.gateOpen();
+                    }
+                    else{
+                        robot.gate.gateClosed();
                         setPathState(-1);
                     }
                 }
