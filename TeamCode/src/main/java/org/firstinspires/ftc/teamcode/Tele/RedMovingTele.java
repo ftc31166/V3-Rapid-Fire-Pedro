@@ -7,6 +7,7 @@ import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -38,6 +39,7 @@ public class RedMovingTele extends OpMode {
     private double slowModeMultiplier = 0.5;
     double rpm = 0;
     double target = 0;
+    Servo light;
     
     @Override
     public void init(){
@@ -51,6 +53,7 @@ public class RedMovingTele extends OpMode {
         telemetry.addData("cam connected",
         robot.cam.isConnected());
         telemetry.addData("cam on", robot.cam.isRunning());
+        light = hardwareMap.get(Servo.class, "light");
 
     }
     @Override
@@ -177,7 +180,8 @@ public class RedMovingTele extends OpMode {
                 }
                 break;
         }
-
+        double lightPosition = (fsm == states.SHOOT) ? .5 : 0;
+        light.setPosition(lightPosition);
         target = robot.turret.autoAim(drivepose,Poses.redGoal);
         rpm = robot.flywheels.distanceToRPM(drivepose,Poses.redGoal,0);
         robot.hood.setPosition(robot.hood.distanceToRPM(drivepose,Poses.redGoal));

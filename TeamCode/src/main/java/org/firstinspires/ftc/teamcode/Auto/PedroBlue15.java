@@ -8,7 +8,6 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
-import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -18,30 +17,31 @@ import org.firstinspires.ftc.teamcode.Subsystems.Poses;
 import org.firstinspires.ftc.teamcode.Subsystems.Robot;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-@Autonomous(name = "Red 15", group = "Autonomous")
+@Autonomous(name = "Blue 15", group = "Autonomous")
 @Configurable // Panels
-public class PedroRed15 extends OpMode {
+public class PedroBlue15 extends OpMode {
     private TelemetryManager panelsTelemetry; // Panels Telemetry instance
     private Follower follower; // Pedro Pathing follower instance
     private int pathState; // Current autonomous path state (state machine)
     private Paths paths; // Paths defined in the Paths class
     private ElapsedTime pathTimer, actionTimer, opmodeTimer;
-    // PedroRed15.start.mirror(144)
-    public static final Pose start = new Pose(125,120,Math.toRadians(36.4));
-    public static final Pose shootPoint = new Pose(87.758, 88.152);
-    public static final Pose Path2ControlPoint1 = new Pose(92.58767772511847, 63.753554502369674);
-    public static final Pose Path2ControlPoint2 = new Pose(108.68246445497631, 58.05308056872038);
-    public static final Pose intakeFirst = new Pose(132.44075829383883, 57.65876777251183);
-    public static final Pose Path3ControlPoint1 = new Pose(100.74241706161138, 66.31516587677724);
-    public static final Pose Path4ControlPoint1 = new Pose(114.03270142180094, 60);
-    public static final Pose gateOpenPose = new Pose(127, 60);
-    public static final Pose Path5ControlPoint1 = new Pose(107.87109004739337, 69.25829383886254);
-    public static final Pose Path6ControlPoint1 = new Pose(84.51536275003177, 30.206816459931296);
-    public static final Pose Path6ControlPoint2 = new Pose(110.22318569682625, 34.75392502225884);
-    public static final Pose intakeSecond = new Pose(132.788510565347, 34.39766738374245);
-    public static final Pose Path8ControlPoint1 = new Pose(98.4385296443562, 81.47862874460121);
-    public static final Pose intakeThird = new Pose(126.0585366123422, 83.130);
-    public static final Pose Path9ControlPoint1 = new Pose(98.47724620770128, 81.57117852975497);
+
+
+    public static final Pose start = new Pose(144 - 125,120,Math.toRadians(-36.4));
+    public static final Pose shootPoint = new Pose(144 - 87.758, 88.152);
+    public static final Pose Path2ControlPoint1 = new Pose(144 - 92.58767772511847, 63.753554502369674);
+    public static final Pose Path2ControlPoint2 = new Pose(144 - 108.68246445497631, 58.05308056872038);
+    public static final Pose intakeFirst = new Pose(144 - 132.44075829383883, 57.65876777251183);
+   public static final Pose Path3ControlPoint1 = new Pose(144 - 100.74241706161138, 66.31516587677724);
+    public static final Pose Path4ControlPoint1 = new Pose(144 - 114.03270142180094, 60);
+    public static final Pose gateOpenPose = new Pose(144 - 129, 58);
+    public static final Pose Path5ControlPoint1 = new Pose(144 - 107.87109004739337, 69.25829383886254);
+    public static final Pose Path6ControlPoint1 = new Pose(144 - 84.51536275003177, 30.206816459931296);
+    public static final Pose Path6ControlPoint2 = new Pose(144 - 110.22318569682625, 34.75392502225884);
+    public static final Pose intakeSecond = new Pose(144 - 132.788510565347, 34.39766738374245);
+    public static final Pose Path8ControlPoint1 = new Pose(144 - 98.4385296443562, 81.47862874460121);
+    public static final Pose intakeThird = new Pose(144 - 126.0585366123422, 83.130);
+    public static final Pose Path9ControlPoint1 = new Pose(144 - 98.47724620770128, 81.57117852975497);
     Robot robot;
     @Override
     public void init() {
@@ -112,7 +112,7 @@ public class PedroRed15 extends OpMode {
                                     start,
                                     shootPoint
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(36.4), Math.toRadians(-78))
+                    ).setLinearHeadingInterpolation(Math.toRadians(-36.4), Math.toRadians(78))
 
                     .build();
 
@@ -134,7 +134,7 @@ public class PedroRed15 extends OpMode {
                                     Path3ControlPoint1,
                                     shootPoint
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(-1), Math.toRadians(-42))
+                    ).setLinearHeadingInterpolation(Math.toRadians(1), Math.toRadians(42))
 
                     .build();
 
@@ -143,8 +143,8 @@ public class PedroRed15 extends OpMode {
                                     shootPoint,
                                     Path4ControlPoint1
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(-42), Math.toRadians(30))
-                    .setVelocityConstraint(20)
+                    ).setLinearHeadingInterpolation(Math.toRadians(42), Math.toRadians(-35))
+                    .setVelocityConstraint(30)
                     .build();
 
 
@@ -154,7 +154,7 @@ public class PedroRed15 extends OpMode {
                                     Path5ControlPoint1,
                                     shootPoint
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(30), Math.toRadians(-93))
+                    ).setLinearHeadingInterpolation(Math.toRadians(-35), Math.toRadians(93))
 
                     .build();
 
@@ -174,7 +174,7 @@ public class PedroRed15 extends OpMode {
                                     intakeSecond,
                                     shootPoint
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
+                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-45))
 
                     .build();
 
@@ -184,7 +184,7 @@ public class PedroRed15 extends OpMode {
                                     Path8ControlPoint1,
                                     intakeThird
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
+                    ).setLinearHeadingInterpolation(Math.toRadians(-45), Math.toRadians(0))
 
                     .build();
 
@@ -210,8 +210,8 @@ public class PedroRed15 extends OpMode {
                             Path4ControlPoint1,
                             gateOpenPose
                     )
-            ).setLinearHeadingInterpolation(Math.toRadians(30), Math.toRadians(30))
-                    .setVelocityConstraint(2)
+            ).setLinearHeadingInterpolation(Math.toRadians(-35), Math.toRadians(-33))
+                    .setVelocityConstraint(5)
             .build();
 
         }

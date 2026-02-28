@@ -24,7 +24,6 @@ public class RedFar extends OpMode {
     private int pathState;
     public static final Pose start = new Pose(87,9,Math.toRadians(0));
     public static final Pose pose1 = new Pose(135,9,Math.toRadians(0));
-
     public static final Pose pose2 = new Pose(125,9,Math.toRadians(0));
     public static final Pose pose3 = new Pose(135,9,Math.toRadians(0));
     public static final Pose pose4 = new Pose(85,15,Math.toRadians(45));
