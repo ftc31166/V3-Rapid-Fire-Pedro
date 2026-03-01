@@ -9,7 +9,7 @@ public class Poses {
     public static Pose redReinit = new Pose(128, 72,Math.toRadians(0));
     public static Pose blueGoal = redGoal.mirror(144);
     public static Pose blueAutoEnd = redAutoEnd.mirror(144);
-    public static Pose blueReinit = redReinit.mirror(144);
+    public static Pose blueReinit = new Pose(144-128, 72,Math.toRadians(180));
     
 
 }

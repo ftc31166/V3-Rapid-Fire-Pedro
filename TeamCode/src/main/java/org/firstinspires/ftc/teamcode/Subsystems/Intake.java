@@ -13,7 +13,7 @@ public class Intake {
         intake.setPower(1);
     }
     public void slowIntake(){
-        intake.setPower(.7);
+        intake.setPower(.9);
     }
 
     public void stopIntake(){

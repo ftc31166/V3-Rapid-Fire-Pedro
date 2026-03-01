@@ -15,22 +15,22 @@ import com.pedropathing.paths.PathChain;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name = "Red Far No Spike", group = "Autonomous")
+@Autonomous(name = "blue Far No Spike", group = "Autonomous")
 @Configurable // Panels
-public class RedFarNoSpike extends OpMode {
+public class BlueFarNoSpike extends OpMode {
 
     private Follower follower;
     private ElapsedTime pathTimer, actionTimer, opmodeTimer;
     private int pathState;
-    public static final Pose start = new Pose(87,9,Math.toRadians(0));
-    public static final Pose pose1 = new Pose(127,12,Math.toRadians(0));
-    public static final Pose goback = new Pose(130,12,Math.toRadians(0));
-    public static final Pose shoot = new Pose(87,12,Math.toRadians(0));
+    public static final Pose start = new Pose(144-87,9,Math.toRadians(180));
+    public static final Pose pose1 = new Pose(144-129,10,Math.toRadians(180));
+    public static final Pose goback = new Pose(144-125,10,Math.toRadians(180));
+    public static final Pose shoot = new Pose(144-87,10,Math.toRadians(180));
 
 
 
 
-    public static final Pose park = new Pose(107,15,Math.toRadians(0));
+    public static final Pose park = new Pose(144-107,15,Math.toRadians(180));
     PathChain path1,path2,path3;
     Robot robot;
     @Override
@@ -39,7 +39,7 @@ public class RedFarNoSpike extends OpMode {
         opmodeTimer = new ElapsedTime();
         opmodeTimer.reset();
         follower = Constants.createFollower(hardwareMap);
-        robot =new Robot(hardwareMap,start, Poses.redGoal);
+        robot =new Robot(hardwareMap,start, Poses.blueGoal);
 
         buildPaths();
         follower.setStartingPose(start);
@@ -51,9 +51,9 @@ public class RedFarNoSpike extends OpMode {
         autonomousPathUpdate();
         if (pathState < 12) {
             robot.turret.setTargetAngle(
-                    70
+                    -68
             );
-            robot.flywheels.setTargetRPM(4300);
+            robot.flywheels.setTargetRPM(4400);
             robot.hood.setPosition(
                     .35
             );
@@ -85,10 +85,12 @@ public class RedFarNoSpike extends OpMode {
         path1 = follower.pathBuilder()
                 .addPath(new BezierLine(start, pose1))
                 .setLinearHeadingInterpolation(start.getHeading(), pose1.getHeading())
+                .setVelocityConstraint(1)
                 .addPath(new BezierLine(pose1, goback))
                 .setLinearHeadingInterpolation(pose1.getHeading(), goback.getHeading())
                 .addPath(new BezierLine(goback, pose1))
                 .setLinearHeadingInterpolation(goback.getHeading(), pose1.getHeading())
+                .setVelocityConstraint(1)
                 .build();
         /* This is our scorePickup1 PathChain. We are using a single path with a BezierLine, which is a straight line. */
         path2 = follower.pathBuilder()
@@ -132,6 +134,7 @@ public class RedFarNoSpike extends OpMode {
                     /* Score Preload */
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
                     if(pathTimer.seconds()>1) {
+                        robot.intake.stopIntake();
 
                         follower.followPath(path2, false);
                         setPathState(2);
@@ -141,7 +144,7 @@ public class RedFarNoSpike extends OpMode {
                 break;
             case 2:
                 if(advance()) {
-                    if (pathTimer.seconds() < 5) {
+                    if (pathTimer.seconds() < 4) {
                         robot.gate.gateOpen();
                         robot.intake.slowIntake();
                     } else {
@@ -165,7 +168,7 @@ public class RedFarNoSpike extends OpMode {
                     /* Score Preload */
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
                     if(pathTimer.seconds()>1) {
-
+                        robot.intake.stopIntake();
                         follower.followPath(path2, false);
                         setPathState(4);
                     }
@@ -174,7 +177,7 @@ public class RedFarNoSpike extends OpMode {
                 break;
             case 4:
                 if(advance()) {
-                    if (pathTimer.seconds() < 5) {
+                    if (pathTimer.seconds() < 4) {
                         robot.gate.gateOpen();
                         robot.intake.slowIntake();
                     } else {
@@ -198,7 +201,7 @@ public class RedFarNoSpike extends OpMode {
                     /* Score Preload */
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
                     if(pathTimer.seconds()>1) {
-
+                        robot.intake.stopIntake();
                         follower.followPath(path2, false);
                         setPathState(6);
                     }
@@ -207,7 +210,7 @@ public class RedFarNoSpike extends OpMode {
                 break;
             case 6:
                 if(advance()) {
-                    if (pathTimer.seconds() < 5) {
+                    if (pathTimer.seconds() < 4) {
                         robot.gate.gateOpen();
                         robot.intake.slowIntake();
                     } else {
@@ -241,6 +244,6 @@ public class RedFarNoSpike extends OpMode {
         pathTimer.reset();
     }
     private boolean advance() {
-        return !follower.isBusy() || pathTimer.seconds() > 8;
+        return !follower.isBusy() || pathTimer.seconds() > 3;
     }
 }

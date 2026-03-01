@@ -8,7 +8,7 @@ public class Gate {
 //    public double gateOpen = .7;
 
     public double gateClosed = 0.87;
-    public double gateOpen = .7;
+    public double gateOpen = .75;
 
     Servo gate;
     public Gate(HardwareMap hardwareMap){

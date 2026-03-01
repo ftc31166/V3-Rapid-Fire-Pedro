@@ -270,8 +270,9 @@ public class PedroRed15 extends OpMode {
                 }
             case 4:
                 if (advance()){
+                    robot.intake.stopIntake();
                     follower.followPath(paths.Path5, true);
-                    robot.intake.intakeBalls();
+
                     setPathState(5);
                 }
                 break;

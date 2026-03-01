@@ -73,16 +73,20 @@ public class PedroBlue15 extends OpMode {
     @Override
     public void loop() {
         follower.update();
-        autonomousPathUpdate();
+        try {
+            autonomousPathUpdate();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         if (pathState >= 0) {
             robot.turret.setTargetAngle(
-                    -45
+                    -43
             );
             robot.flywheels.setTargetRPM(robot.flywheels.distanceToRPM(follower.getPose(), Poses.blueGoal, 0));
             robot.hood.setPosition(
                     robot.hood.distanceToRPM(follower.getPose(), Poses.blueGoal)
             );
-            robot.intake.intakeBalls();
+
         } else {
             // Final safe state
             robot.turret.setTargetAngle(0);
@@ -111,18 +115,17 @@ public class PedroBlue15 extends OpMode {
                                     start,
                                     shootPoint
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180-36.4), Math.toRadians(180+78))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180-36.4), Math.toRadians(180))
 
                     .build();
-            TurnPath = follower.pathBuilder().addPath(
-                    new BezierLine(
-                            shootPoint,
-                            shootPointConstantHeading
-                    )
-            ).setLinearHeadingInterpolation(follower.getHeading(), Math.toRadians(0))
-                    .build();
 
-            Path2 = follower.pathBuilder().addPath(
+
+            Path2 = follower.pathBuilder()
+//                    .addPath(new BezierLine(shootPoint,shootPoint))
+//                    .setLinearHeadingInterpolation(Math.toRadians(180),Math.toRadians(180+78))
+
+
+                    .addPath(
                             new BezierCurve(
                                     shootPoint,
                                     Path2ControlPoint1,
@@ -140,17 +143,30 @@ public class PedroBlue15 extends OpMode {
                                     Path3ControlPoint1,
                                     shootPoint
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180+1), Math.toRadians(180+42))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180+1), Math.toRadians(180))
 
                     .build();
 
-            Path4 = follower.pathBuilder().addPath(
+            Path4 = follower.pathBuilder()
+//                    .addPath(new BezierLine(shootPoint,shootPoint))
+//                    .setLinearHeadingInterpolation(Math.toRadians(180),Math.toRadians(180+42))
+
+
+                    .addPath(
                             new BezierLine(
                                     shootPoint,
                                     Path4ControlPoint1
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180+42), Math.toRadians(180+35))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180+42), Math.toRadians(180-30))
                     .setVelocityConstraint(30)
+
+                    .addPath(
+                            new BezierLine(
+                                    Path4ControlPoint1,
+                                    gateOpenPose
+                            )
+                    ).setLinearHeadingInterpolation(Math.toRadians(180-30), Math.toRadians(180-30))
+                    .setVelocityConstraint(5)
                     .build();
 
 
@@ -160,11 +176,16 @@ public class PedroBlue15 extends OpMode {
                                     Path5ControlPoint1,
                                     shootPoint
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180+35), Math.toRadians(180+93))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180+30), Math.toRadians(180))
 
                     .build();
 
-            Path6 = follower.pathBuilder().addPath(
+            Path6 = follower.pathBuilder()
+//                    .addPath(new BezierLine(shootPoint,shootPoint))
+//                    .setLinearHeadingInterpolation(Math.toRadians(180),Math.toRadians(180+93))
+
+
+                    .addPath(
                             new BezierCurve(
                                     shootPoint,
                                     Path6ControlPoint1,
@@ -180,11 +201,16 @@ public class PedroBlue15 extends OpMode {
                                     intakeSecond,
                                     shootPoint
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180-0), Math.toRadians(180-45))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180-0), Math.toRadians(180))
 
                     .build();
 
-            Path8 = follower.pathBuilder().addPath(
+            Path8 = follower.pathBuilder()
+//                    .addPath(new BezierLine(shootPoint,shootPoint))
+//                    .setLinearHeadingInterpolation(Math.toRadians(180),Math.toRadians(180-45))
+
+
+                    .addPath(
                             new BezierCurve(
                                     shootPoint,
                                     Path8ControlPoint1,
@@ -205,40 +231,28 @@ public class PedroBlue15 extends OpMode {
                     .build();
             Path10 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(87.730, 88.365),
-                                    new Pose(115.000, 72.000)
+                                    new Pose(144- 87.730, 88.365),
+                                    new Pose(144- 115.000, 72.000)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(180+0), Math.toRadians(180+0))
 
                     .build();
-            Path11 = follower.pathBuilder().addPath(
-                    new BezierLine(
-                            Path4ControlPoint1,
-                            gateOpenPose
-                    )
-            ).setLinearHeadingInterpolation(Math.toRadians(180-35), Math.toRadians(180-33))
-                    .setVelocityConstraint(5)
-            .build();
+
 
         }
     }
 
 
 
-    public void autonomousPathUpdate() {
+    public void autonomousPathUpdate() throws InterruptedException {
         switch (pathState){
             case 0:
                 follower.followPath(paths.Path1, true);
-                if (pathTimer.seconds() > 1) {
-                    setPathState(12);
-                }
-                break;
-            case 12:
-                if (advance()) {
-                    follower.turnTo(Math.toRadians(180)-follower.getHeading());
+
                     setPathState(1);
-                }
+
                 break;
+
           case 1:
                 if (advance()){
                     robot.intake.intakeBalls();
@@ -247,14 +261,17 @@ public class PedroBlue15 extends OpMode {
                     }
                     else{
                         robot.gate.gateClosed();
+
                         follower.followPath(paths.Path2, true);
                         setPathState(2);
                     }
                 }
                 break;
             case 2:
+                robot.intake.intakeBalls();
                 if (advance()) {
                     follower.followPath(paths.Path3, false);
+
                     setPathState(3);
                 }
                 break;
@@ -273,19 +290,20 @@ public class PedroBlue15 extends OpMode {
             case 11:
                 if (advance()){
                     robot.intake.intakeBalls();
-                    if (pathTimer.milliseconds() < 4000){
-                        follower.followPath(paths.Path4, false);
-                        follower.followPath(paths.Path11, true);
-                    }
-                    else{
+
+                        follower.followPath(paths.Path4, true);
                         setPathState(4);
-                    }
+
+
                 }
                 break;
             case 4:
                 if (advance()){
-                    follower.followPath(paths.Path5, false);
-                    setPathState(5);
+                    if(pathTimer.milliseconds()>3500) {
+                        robot.intake.stopIntake();
+                        follower.followPath(paths.Path5, false);
+                        setPathState(5);
+                    }
                 }
                 break;
             case  5:
@@ -303,6 +321,7 @@ public class PedroBlue15 extends OpMode {
                 break;
             case 6:
                 if (advance()){
+                    robot.intake.intakeBalls();
                     follower.followPath(paths.Path7, false);
                     setPathState(7);
                 }
@@ -322,6 +341,7 @@ public class PedroBlue15 extends OpMode {
                 break;
             case 8:
                 if (advance()){
+                    robot.intake.intakeBalls();
                     follower.followPath(paths.Path9, false);
                     setPathState(9);
                 }
@@ -340,7 +360,8 @@ public class PedroBlue15 extends OpMode {
                 break;
             case 10:
                 if(advance()){
-                    follower.followPath(paths.Path10, false);
+                    robot.intake.intakeBalls();
+                    follower.followPath(paths.Path10, true);
                     setPathState(-1);
                 }
                 break;
